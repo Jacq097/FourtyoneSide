@@ -1,0 +1,284 @@
+﻿<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profil</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons via CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Supabase JS via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Cropper.js CDN -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+  
+
+   
+  <link rel="stylesheet" href="CSS/profil.css" />
+</head>
+
+<body class="min-h-screen text-slate-800 font-sans antialiased overflow-x-hidden">
+
+  <!-- ===== NAVBAR ===== -->
+  <header class="sticky top-0 inset-x-0 z-50 bg-white border-b border-slate-200">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2.5 group">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center group-hover:scale-105 transition">
+          <i data-lucide="graduation-cap" class="w-5 h-5 text-white"></i>
+        </div>
+        <div class="leading-tight">
+          <span class="block font-extrabold text-lg tracking-wide text-slate-900">FourtyOneside</span>
+          <span class="block text-[11px] text-slate-500 -mt-0.5">Profil Siswa</span>
+        </div>
+      </a>
+
+        <a href="index.html" class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-lg btn-outline text-sm font-semibold text-slate-700">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          Beranda
+        </a>
+      </nav>
+  </header>
+
+  <!-- ===== PROFILE CONTENT ===== -->
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Profile Header Card -->
+    <div class="card rounded-2xl p-6 sm:p-8 reveal active">
+      <div class="flex flex-col sm:flex-row items-center gap-6">
+        <div class="relative">
+          <div class="relative inline-block">
+            <img id="profileFoto" src="https://ui-avatars.com/api/?name=User&background=random" alt="Foto Profil"
+                 class="w-24 h-24 rounded-full object-cover border-2 border-slate-200" />
+            <span id="roleBadge" class="absolute -bottom-1 -right-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">Siswa</span>
+          </div>
+          <div id="noteBubble" class="absolute -top-3 -right-2 whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white text-slate-600 border border-slate-200 cursor-pointer hover:bg-slate-50 transition z-10">
+            Notes..
+          </div>
+        </div>
+        <div class="text-center sm:text-left flex-1">
+          <h1 id="profileNama" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-6 sm:mt-0">Nama Siswa</h1>
+          <p id="profileUsername" class="text-slate-500 mt-1 inline-flex items-center gap-1.5">
+            <i data-lucide="at-sign" class="w-4 h-4"></i> @username
+          </p>
+          <div class="mt-3 flex flex-wrap justify-center sm:justify-start gap-2">
+            <span id="profileKelas" class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-xs font-semibold">IX-A</span>
+            <span id="profileJabatan" class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-xs font-semibold">Siswa</span>
+          </div>
+        </div>
+        <button id="editProfileBtn" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl btn-outline text-sm font-semibold text-slate-700">
+          <i data-lucide="pencil" class="w-4 h-4"></i>
+          Edit Profil
+        </button>
+      </div>
+    </div>
+
+    <!-- Info Diri -->
+    <div class="card rounded-2xl p-6 sm:p-8 mt-6 reveal">
+      <h2 class="text-lg font-bold flex items-center gap-2 mb-5 text-slate-800">
+        <i data-lucide="id-card" class="w-5 h-5 text-blue-600"></i>
+        Informasi Diri
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="p-4 rounded-xl border border-slate-200 bg-white">
+          <p class="text-xs text-slate-500">Nama Lengkap</p>
+          <p id="infoNama" class="mt-1 font-semibold text-slate-800">-</p>
+        </div>
+        <div class="p-4 rounded-xl border border-slate-200 bg-white">
+          <p class="text-xs text-slate-500">Username</p>
+          <p id="infoUsername" class="mt-1 font-semibold text-slate-800">-</p>
+        </div>
+        <div class="p-4 rounded-xl border border-slate-200 bg-white">
+          <p class="text-xs text-slate-500">Status / Jabatan</p>
+          <p id="infoJabatan" class="mt-1 font-semibold text-slate-800">-</p>
+        </div>
+        <div class="p-4 rounded-xl border border-slate-200 bg-white">
+          <p class="text-xs text-slate-500">Kelas</p>
+          <p id="infoKelas" class="mt-1 font-semibold text-slate-800">-</p>
+        </div>
+        <div class="p-4 rounded-xl border border-slate-200 bg-white">
+          <p class="text-xs text-slate-500">Bio</p>
+          <p id="infoBio" class="mt-1 font-semibold text-slate-800">-</p>
+        </div>
+        <div class="p-4 rounded-xl border border-slate-200 bg-white">
+          <p class="text-xs text-slate-500">Media Sosial</p>
+          <div class="mt-2 flex items-center gap-3">
+            <a id="linkInstagram" href="#" target="_blank" class="text-slate-400 hover:text-pink-500 transition disabled:opacity-30 disabled:hover:text-slate-400">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+            </a>
+            <a id="linkTiktok" href="#" target="_blank" class="text-slate-400 hover:text-slate-600 transition disabled:opacity-30 disabled:hover:text-slate-400">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4h3.5a5.5 5.5 0 0 0 5.5 5.5v3.5a9 9 0 0 1-5.5-2v3.5z"></path></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- Rekap Absensi 5 Hari Sekolah -->
+    <div class="card rounded-2xl p-6 sm:p-8 mt-6 reveal">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h2 class="text-lg font-bold flex items-center gap-2 text-slate-800">
+            <i data-lucide="calendar-check" class="w-5 h-5 text-blue-600"></i>
+            Rekap Absensi 5 Hari Sekolah Terakhir
+          </h2>
+          <p class="text-xs text-slate-500 mt-1">Data diambil dari tabel absensi</p>
+        </div>
+        <span id="summaryChip" class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-xs font-semibold">-</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left text-slate-500 border-b border-slate-200">
+              <th class="py-3 pr-4 whitespace-nowrap">Tanggal</th>
+              <th class="py-3 pr-4 whitespace-nowrap">Keterangan</th>
+              <th class="py-3 whitespace-nowrap">Status ACC</th>
+            </tr>
+          </thead>
+<tbody id="absensiBody">
+            <tr>
+              <td colspan="3" class="py-8 text-center text-slate-500">
+                <i data-lucide="loader" class="w-6 h-6 mx-auto mb-2 animate-spin"></i>
+                Memuat data absensi...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty state: tampil saat belum ada data absensi -->
+      <div id="absensiEmpty" class="hidden text-center py-8 text-slate-500">
+        <i data-lucide="calendar-x" class="w-6 h-6 mx-auto mb-2 opacity-50"></i>
+        <p class="text-sm">Belum ada data absensi untuk 5 hari sekolah terakhir.</p>
+      </div>
+</div>
+
+    <!-- Action Buttons -->
+    <div class="mt-8 flex flex-col sm:flex-row gap-4">
+      <a href="index.html" class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl btn-outline font-semibold text-slate-700">
+        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        Kembali ke Halaman Utama
+      </a>
+      <button id="logoutBtn" class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-rose-600 text-white font-semibold hover:bg-rose-700 transition">
+        <i data-lucide="log-out" class="w-5 h-5"></i>
+        Logout
+      </button>
+    </div>
+
+  </main>
+
+  <!-- ===== CROP FOTO MODAL ===== -->
+  <div id="cropModal" class="fixed inset-0 z-[110] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" id="cropModalBackdrop"></div>
+    <div class="relative card rounded-2xl p-6 sm:p-8 w-full max-w-lg">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-bold flex items-center gap-2 text-slate-800">
+          <i data-lucide="crop" class="w-5 h-5 text-blue-600"></i>
+          Potong Foto Profil
+        </h3>
+        <button id="closeCropModal" class="p-2 rounded-lg hover:bg-slate-100 transition text-slate-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div class="relative bg-slate-50 rounded-2xl overflow-hidden mb-4" style="height: 320px;">
+        <img id="cropImage" src="" alt="Preview" class="max-w-full block" />
+        <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div class="w-64 h-64 rounded-full border-2 border-white/60 shadow-[0_0_0_9999px_rgba(0,0,0,0.3)]"></div>
+        </div>
+      </div>
+      <div class="mb-6">
+        <label class="block text-xs font-medium text-slate-700 mb-1.5">Zoom</label>
+        <input type="range" id="zoomSlider" min="0" max="1" step="0.01" value="0" class="w-full" />
+      </div>
+      <div class="flex gap-3">
+        <button type="button" id="btnBatalCrop" class="flex-1 px-6 py-3 rounded-xl btn-outline font-semibold text-slate-700">Batal</button>
+        <button type="button" id="btnTerapkanCrop" class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl btn-primary font-semibold">
+          <i data-lucide="check" class="w-5 h-5"></i>
+          Terapkan Perubahan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== EDIT PROFIL MODAL ===== -->
+  <div id="editProfileModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" id="editModalBackdrop"></div>
+    <div class="relative card rounded-2xl p-6 sm:p-8 w-full max-w-md">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-bold flex items-center gap-2 text-slate-800">
+          <i data-lucide="pencil" class="w-5 h-5 text-blue-600"></i>
+          Edit Profil
+        </h3>
+        <button id="closeEditModal" class="p-2 rounded-lg hover:bg-slate-100 transition text-slate-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <form id="editProfileForm" class="mt-6 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1.5">Foto Profil (maks 3MB)</label>
+          <input type="file" id="editFoto" accept="image/*" class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 outline-none focus:border-blue-500 transition text-sm" onchange="bukaModalPotong(event)" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1.5">Bio</label>
+          <textarea id="editBio" rows="3" placeholder="Tulis bio..." class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 outline-none focus:border-blue-500 transition text-sm resize-none"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1.5">Link Instagram</label>
+          <input type="url" id="editInstagram" placeholder="https://instagram.com/username" class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 outline-none focus:border-blue-500 transition text-sm" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1.5">Link TikTok</label>
+          <input type="url" id="editTiktok" placeholder="https://tiktok.com/@username" class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 outline-none focus:border-blue-500 transition text-sm" />
+        </div>
+        <div class="flex gap-3">
+          <button type="button" id="btnBatalEdit" class="flex-1 px-6 py-3 rounded-xl btn-outline font-semibold text-slate-700">Batal</button>
+          <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl btn-primary font-semibold">
+            <i data-lucide="save" class="w-5 h-5"></i>
+            Simpan Perubahan
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== NOTE MODAL ===== -->
+  <div id="noteModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" id="noteModalBackdrop"></div>
+    <div class="relative card rounded-2xl p-6 sm:p-8 w-full max-w-md">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-bold flex items-center gap-2 text-slate-800">
+          <i data-lucide="message-circle" class="w-5 h-5 text-blue-600"></i>
+          Notes
+        </h3>
+        <button id="closeNoteModal" class="p-2 rounded-lg hover:bg-slate-100 transition text-slate-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <form id="noteForm" class="mt-6 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1.5">Notes (maks 30 karakter)</label>
+          <input type="text" id="noteInput" maxlength="30" required placeholder="Tulis notesmu..." class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 outline-none focus:border-blue-500 transition text-sm" />
+        </div>
+        <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl btn-primary font-semibold">
+          <i data-lucide="save" class="w-5 h-5"></i>
+          Simpan Notes
+        </button>
+        <button type="button" id="btnHapusNote" class="hidden w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-red-500 text-white font-semibold hover:bg-red-600 transition">
+          <i data-lucide="trash-2" class="w-5 h-5"></i>
+          Hapus Notes
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="supabase-config.js?v=2.0"></script>
+  
+  <script src="js/profil.js"></script>
+</body>
+</html>

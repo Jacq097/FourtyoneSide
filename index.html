@@ -1,0 +1,351 @@
+﻿<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FourtyOneside</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons via CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Supabase JS via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  
+
+  
+  <link rel="stylesheet" href="CSS/index.css" />
+</head>
+
+<body class="text-slate-800 font-sans antialiased overflow-x-hidden">
+
+  <!-- ===== NAVBAR / HEADER ===== -->
+  <header class="fixed top-0 inset-x-0 z-50 bg-white border-b border-slate-200">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <!-- Logo -->
+      <a href="#home" class="flex items-center gap-2.5 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-900/40 group-hover:scale-105 transition">
+          <i data-lucide="graduation-cap" class="w-5 h-5 text-white"></i>
+        </div>
+        <div class="leading-tight">
+          <span class="block font-extrabold text-lg tracking-wide">FourtyOneside</span>
+          <span class="block text-[11px] text-slate-400 -mt-0.5">Together We Rise</span>
+        </div>
+      </a>
+
+      <!-- Desktop Menu -->
+      <div class="hidden lg:flex items-center gap-8 text-sm font-medium text-slate-600">
+        <a href="#beranda" class="hover:text-slate-800 transition">Beranda</a>
+        <a href="#kelas" class="hover:text-slate-800 transition">Kelas</a>
+        <a href="#galeri" class="hover:text-slate-800 transition">Galeri</a>
+        <a href="#siswa" class="hover:text-slate-800 transition">Siswa</a>
+      </div>
+
+<!-- Login / Profile Button -->
+      <div class="flex items-center gap-3">
+        <!-- Not logged in -->
+        <a href="login.html" id="loginBtn" class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-lg btn-primary text-sm font-semibold">
+          <i data-lucide="log-in" class="w-4 h-4"></i>
+          Login
+        </a>
+
+        <!-- Logged in: Profile button -->
+        <div id="profileArea" class="hidden relative">
+          <div class="flex items-center gap-2">
+            <a href="profil.html" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition">
+              <img id="headerAvatarImg" src="https://ui-avatars.com/api/?name=User&background=random" alt="Avatar" class="w-7 h-7 rounded-full object-cover" />
+              <span id="profileName" class="text-sm font-semibold max-w-[120px] truncate text-slate-700">User</span>
+            </a>
+            <button id="logoutBtn" title="Logout" class="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition text-slate-600">
+              <i data-lucide="log-out" class="w-4 h-4"></i>
+            </button>
+          </div>
+         </div>
+
+          <!-- Mobile menu toggle -->
+         <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition">
+  <i data-lucide="menu" class="w-5 h-5 text-slate-600"></i>
+</button>
+      </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="lg:hidden hidden bg-white border-b border-slate-200">
+      <div class="px-4 py-4 flex flex-col gap-3 text-sm font-medium text-slate-600">
+        <a href="#beranda" class="px-3 py-2 rounded-lg hover:bg-slate-50 transition">Beranda</a>
+        <a href="#kelas" class="px-3 py-2 rounded-lg hover:bg-slate-50 transition">Kelas</a>
+        <a href="#galeri" class="px-3 py-2 rounded-lg hover:bg-slate-50 transition">Galeri</a>
+        <a href="#siswa" class="px-3 py-2 rounded-lg hover:bg-slate-50 transition">Siswa</a>
+<a href="login.html" class="mt-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg btn-primary text-sm font-semibold">
+          <i data-lucide="log-in" class="w-4 h-4"></i>
+          Login
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== HERO SECTION ===== -->
+  <section id="beranda" class="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+      <!-- Hero Text -->
+      <div class="reveal">
+        <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-slate-200 bg-blue-50 text-xs font-semibold text-blue-700 tracking-wide">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+          Angkatan 41
+        </span>
+        <h1 class="mt-6 text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight text-slate-900">
+          Selamat Datang di
+          <span class="block text-blue-700">FourtyOneside</span>
+        </h1>
+        <p class="mt-6 text-lg text-slate-600 max-w-xl leading-relaxed">
+          "Melangkah Bersama, Membangun Kenangan." Satu angkatan, dua kelas, seribu cerita.
+          Website ini menjadi tempat dan kenangan murid murid angkatan ke-41 SMPHI.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href="#kelas" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl btn-primary font-semibold">
+            <i data-lucide="compass" class="w-5 h-5"></i>
+            Jelajahi Kelas
+          </a>
+          <a href="#galeri" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl btn-outline font-semibold text-slate-700">
+            <i data-lucide="camera" class="w-5 h-5"></i>
+            Lihat Galeri
+          </a>
+        </div>
+        <!-- Stats -->
+        <div class="mt-10 grid grid-cols-3 gap-4 max-w-md">
+          <div class="rounded-xl p-4 text-center border border-gray-200 bg-white shadow-sm">
+            <p class="text-2xl font-extrabold text-blue-700">2</p>
+            <p class="text-xs text-slate-500 mt-1">Kelas</p>
+          </div>
+          <div class="rounded-xl p-4 text-center border border-gray-200 bg-white shadow-sm">
+            <p id="statSiswa" class="text-2xl font-extrabold text-blue-700">21</p>
+            <p class="text-xs text-slate-500 mt-1">Siswa</p>
+          </div>
+          <div class="rounded-xl p-4 text-center border border-gray-200 bg-white shadow-sm">
+            <p class="text-2xl font-extrabold text-blue-700">41</p>
+            <p class="text-xs text-slate-500 mt-1">Angkatan</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Photo -->
+      <div class="reveal relative">
+        <div class="absolute -inset-4 bg-blue-100 rounded-3xl"></div>
+        <div class="relative card rounded-2xl p-2 overflow-hidden">
+          <img src="Photo/angkatan41.jpeg" alt="Foto Bersama Angkatan 41"
+               class="w-full h-72 sm:h-96 object-cover rounded-2xl" />
+           <div class="absolute bottom-5 left-5 right-5 rounded-xl px-4 py-3 flex items-center gap-3 bg-black/40 backdrop-blur-md border border-white/20">
+             <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+               <i data-lucide="users" class="w-5 h-5 text-white"></i>
+             </div>
+             <div>
+               <p class="font-semibold text-sm text-white">Foto Angkatan ke-41</p>
+               <p class="text-xs text-white/80">Angkatan ke-41 SMP Islam Harapan Ibu</p>
+             </div>
+           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== KELAS SECTION (BENTO GRID) ===== -->
+  <section id="kelas" class="py-20 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center reveal">
+        <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-slate-200 bg-blue-50 text-xs font-semibold text-blue-700 tracking-wide">
+          <i data-lucide="school" class="w-3.5 h-3.5"></i>
+          Pilihan Kelas
+        </span>
+        <h2 class="mt-4 text-3xl sm:text-4xl font-extrabold text-slate-900">Dua Kelas, Satu Keluarga</h2>
+        <p class="mt-3 text-slate-500 max-w-2xl mx-auto">Pilih kelasmu dan jelajahi halaman khusus masing-masing kelas.</p>
+      </div>
+
+      <!-- Bento Grid 2 Kolom -->
+      <div class="mt-12 grid md:grid-cols-2 gap-6">
+
+        <!-- Card IX-A -->
+        <div class="card rounded-2xl p-2 reveal hover:border-blue-300 transition group">
+          <div class="relative rounded-2xl overflow-hidden">
+            <img src="https://picsum.photos/seed/ixa/800/450" alt="Kelas IX-A" class="w-full h-56 object-cover group-hover:scale-105 transition duration-500" />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/30 to-transparent"></div>
+            <span class="absolute top-4 left-4 px-3 py-1 rounded-full bg-blue-50 text-xs font-bold text-blue-700 border border-blue-200">Kelas Unggulan</span>
+          </div>
+          <div class="p-6">
+            <div class="flex items-center justify-between">
+              <h3 class="text-2xl font-extrabold text-slate-900">IX-A</h3>
+              <div class="flex items-center gap-2 text-sm text-slate-500">
+                <i data-lucide="users" class="w-4 h-4"></i>
+                <span id="statClassA">11 Siswa</span>
+              </div>
+            </div>
+            <p class="mt-3 text-slate-600 leading-relaxed">
+              Kelas yang dikenal dengan kekompakan dan semangat juangnya. Berisi para siswa yang aktif
+              dalam akademik maupun organisasi sekolah.
+            </p>
+            <div class="mt-5 flex items-center gap-2 text-xs text-slate-500">
+              <span class="px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200">Wali: Bu Atik</span>
+              <span class="px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200">2026/2027</span>
+            </div>
+            <a href="kelas_ix-a.html" class="mt-6 inline-flex items-center justify-center gap-2 w-full px-6 py-3 rounded-xl btn-primary font-semibold">
+              Masuk ke Web IX-A
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card IX-B -->
+        <div class="card rounded-2xl p-2 reveal hover:border-blue-300 transition group">
+          <div class="relative rounded-2xl overflow-hidden">
+            <img src="https://picsum.photos/seed/ixb/800/450" alt="Kelas IX-B" class="w-full h-56 object-cover group-hover:scale-105 transition duration-500" />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/30 to-transparent"></div>
+            <span class="absolute top-4 left-4 px-3 py-1 rounded-full bg-blue-50 text-xs font-bold text-blue-700 border border-blue-200">Kelas Kreatif</span>
+          </div>
+          <div class="p-6">
+            <div class="flex items-center justify-between">
+              <h3 class="text-2xl font-extrabold text-slate-900">IX-B</h3>
+              <div class="flex items-center gap-2 text-sm text-slate-500">
+                <i data-lucide="users" class="w-4 h-4"></i>
+                <span id="statClassB">10 Siswa</span>
+              </div>
+            </div>
+            <p class="mt-3 text-slate-600 leading-relaxed">
+              Kelas penuh kreativitas dan inovasi. Tempat berkumpulnya para siswa yang jago seni,
+              teknologi, dan selalu penuh ide-ide cemerlang.
+            </p>
+            <div class="mt-5 flex items-center gap-2 text-xs text-slate-500">
+              <span class="px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200">Wali: Pak Feri</span>
+              <span class="px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200">2026/2027</span>
+            </div>
+            <a href="kelas_ix-b.html" class="mt-6 inline-flex items-center justify-center gap-2 w-full px-6 py-3 rounded-xl btn-primary font-semibold">
+              Masuk ke Web IX-B
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== GALERI SECTION (MASONRY) ===== -->
+  <section id="galeri" class="py-20 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 reveal">
+        <div>
+          <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-slate-200 bg-blue-50 text-xs font-semibold text-blue-700 tracking-wide">
+            <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+            Galeri Angkatan
+          </span>
+          <h2 class="mt-4 text-3xl sm:text-4xl font-extrabold text-slate-900">Momen Tak Terlupakan</h2>
+          <p class="mt-3 text-slate-500">Dokumentasi setiap momen berharga Angkatan 41.</p>
+        </div>
+        <!-- Admin hidden upload button -->
+        <button id="adminUploadBtn" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl btn-outline text-sm font-semibold text-slate-700 opacity-70 hover:opacity-100">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          Upload Foto
+        </button>
+      </div>
+
+      <!-- Masonry Gallery Grid -->
+      <div id="galleryGrid" class="masonry mt-10"></div>
+    </div>
+  </section>
+
+  <!-- ===== DIRECTORY SISWA SECTION ===== -->
+  <section id="siswa" class="py-20 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center reveal">
+        <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-slate-200 bg-blue-50 text-xs font-semibold text-blue-700 tracking-wide">
+          <i data-lucide="users" class="w-3.5 h-3.5"></i>
+          Directory Siswa
+        </span>
+        <h2 class="mt-4 text-3xl sm:text-4xl font-extrabold text-slate-900">Siswa Angkatan 41</h2>
+        <p class="mt-3 text-slate-500 max-w-2xl mx-auto">Mengenal lebih dekat seluruh anggota Angkatan 41.</p>
+      </div>
+
+      <!-- Search & Filter -->
+      <div class="mt-10 flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between reveal">
+        <div class="flex items-center gap-2 px-4 py-3 rounded-xl border border-slate-200 bg-white flex-1 max-w-md">
+          <i data-lucide="search" class="w-5 h-5 text-slate-400 shrink-0"></i>
+          <input id="searchInput" type="text" placeholder="Cari nama siswa..." class="bg-transparent outline-none w-full text-sm placeholder:text-slate-500 text-slate-800" />
+        </div>
+        <div class="flex gap-2 no-scrollbar overflow-x-auto">
+          <button class="filter-btn px-4 py-2.5 rounded-xl text-sm font-semibold transition active" data-filter="all">Semua</button>
+          <button class="filter-btn px-4 py-2.5 rounded-xl text-sm font-semibold transition" data-filter="IX-A">IX-A</button>
+          <button class="filter-btn px-4 py-2.5 rounded-xl text-sm font-semibold transition" data-filter="IX-B">IX-B</button>
+        </div>
+      </div>
+
+      <!-- Students Grid -->
+      <div id="studentsGrid" class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="mt-10 border-t border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center">
+          <i data-lucide="graduation-cap" class="w-4 h-4 text-white"></i>
+        </div>
+        <div class="leading-tight">
+          <span class="block font-extrabold text-slate-900">ANGKATAN 41</span>
+          <span class="block text-[11px] text-slate-500">Together We Rise</span>
+        </div>
+      </div>
+      <p class="text-sm text-slate-500 text-center">&copy; 2026 Angkatan 41. Dibuat dengan <i data-lucide="heart" class="w-4 h-4 inline text-rose-500"></i> untuk kenangan.</p>
+      <div class="flex items-center gap-3">
+        <a href="#" class="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition text-slate-600"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+        <a href="#" class="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition text-slate-600"><i data-lucide="youtube" class="w-4 h-4"></i></a>
+        <a href="#" class="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition text-slate-600"><i data-lucide="message-circle" class="w-4 h-4"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== ADMIN UPLOAD MODAL ===== -->
+  <div id="adminModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" id="modalBackdrop"></div>
+    <div class="relative card rounded-2xl p-6 sm:p-8 w-full max-w-md">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-bold flex items-center gap-2 text-slate-800">
+          <i data-lucide="upload-cloud" class="w-5 h-5 text-blue-600"></i>
+          Upload Foto Baru
+        </h3>
+        <button id="closeModal" class="p-2 rounded-lg hover:bg-slate-100 transition text-slate-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <form id="uploadForm" class="mt-6 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1.5">Foto (maks 5MB)</label>
+          <input type="file" id="fotoInput" accept="image/*" class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 outline-none focus:border-blue-500 transition text-sm" />
+          <img id="fotoPreview" src="" alt="Preview" class="hidden mt-3 w-full max-h-48 object-cover rounded-xl" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1.5">Caption</label>
+          <input type="text" id="photoCaption" required placeholder="Tuliskan caption momen ini..." class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 outline-none focus:border-blue-500 transition text-sm" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1.5">Tanggal Kegiatan</label>
+          <input type="date" id="photoDate" required class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 outline-none focus:border-blue-500 transition text-sm" />
+        </div>
+        <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl btn-primary font-semibold">
+          <i data-lucide="cloud-upload" class="w-5 h-5"></i>
+          Simpan Foto
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="supabase-config.js?v=2.0"></script>
+  
+  <script src="js/index.js"></script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons via CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Supabase JS via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  
+
+  
+  <link rel="stylesheet" href="CSS/login.css" />
+</head>
+
+<body class="min-h-screen text-slate-800 font-sans antialiased flex items-center justify-center px-4">
+
+  <!-- ===== LOGIN CARD ===== -->
+  <div class="w-full max-w-md">
+    <div class="card rounded-2xl p-8 sm:p-10 relative overflow-hidden">
+      <!-- Accent top line -->
+      <div class="absolute top-0 left-0 right-0 h-1 bg-blue-600"></div>
+
+      <!-- Logo -->
+      <div class="flex flex-col items-center text-center mb-8">
+        <div class="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center mb-4">
+          <i data-lucide="graduation-cap" class="w-8 h-8 text-white"></i>
+        </div>
+        <h1 class="text-2xl font-extrabold text-slate-900 tracking-wide">FortyOneside</h1>
+        <p class="text-sm text-slate-500 mt-1">Silakan masuk untuk melanjutkan</p>
+      </div>
+
+      <!-- Error message -->
+      <div id="errorBox" class="hidden mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium flex items-center gap-2">
+        <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+        <span id="errorText">Username atau password salah.</span>
+      </div>
+
+      <!-- Login form -->
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label for="username" class="block text-sm font-medium text-slate-700 mb-1.5">Username</label>
+          <div class="relative">
+            <i data-lucide="user" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <input type="text" id="username" required autocomplete="username" placeholder="Masukkan username"
+                   class="w-full pl-11 pr-4 py-3 rounded-xl bg-white border border-slate-200 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition text-sm text-slate-800" />
+          </div>
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
+          <div class="relative">
+            <i data-lucide="lock" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <input type="password" id="password" required autocomplete="current-password" placeholder="Masukkan password"
+                   class="w-full pl-11 pr-11 py-3 rounded-xl bg-white border border-slate-200 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition text-sm text-slate-800" />
+            <button type="button" id="togglePass" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition">
+              <i data-lucide="eye" class="w-5 h-5"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" id="submitBtn"
+                class="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl btn-primary font-bold text-sm">
+          <i data-lucide="log-in" class="w-5 h-5"></i>
+          Masuk
+        </button>
+      </form>
+
+      <!-- Back link -->
+      <div class="mt-6 text-center">
+        <a href="index.html" class="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          Kembali ke Halaman Utama
+        </a>
+      </div>
+    </div>
+
+    <!-- Footer note -->
+    <p class="text-center text-xs text-slate-400 mt-6">&copy; 2026 Angkatan 41 · Website Kelas</p>
+  </div>
+
+  <script src="supabase-config.js?v=2.0"></script>
+  
+  <script src="js/login.js"></script>
+</body>
+</html>
