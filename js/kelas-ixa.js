@@ -1429,6 +1429,7 @@ document.getElementById('addPiketBtn').addEventListener('click', () => openPiket
     onAuthStateChange(function(event, session) {
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
         restoreSession();
+        applyAuthUI();
       } else if (event === 'SIGNED_OUT') {
         currentUser = null;
         clearStoredUser();
@@ -1488,12 +1489,12 @@ document.getElementById('addPiketBtn').addEventListener('click', () => openPiket
       const user = readStoredUser() || currentUser;
 
       if (user) {
-        if (loginBtn) loginBtn.style.display = 'none';
+        if (loginBtn) { loginBtn.classList.add('hidden'); loginBtn.style.display = 'none'; }
         if (userChip) { userChip.classList.remove('hidden'); userChip.classList.add('flex'); }
         if (userName) userName.textContent = user.nama_lengkap || user.nama || user.username || 'User';
         if (logoutBtn) logoutBtn.classList.remove('hidden');
       } else {
-        if (loginBtn) loginBtn.style.display = '';
+        if (loginBtn) { loginBtn.classList.remove('hidden'); loginBtn.style.display = ''; }
         if (userChip) { userChip.classList.add('hidden'); userChip.classList.remove('flex'); }
         if (logoutBtn) logoutBtn.classList.add('hidden');
       }
