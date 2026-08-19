@@ -203,30 +203,33 @@
     }
 
     /* =========================================================
-       PR & TUGAS / JADWAL PIKET — SAME HEIGHT + iOS SCROLL
+       PR & TUGAS / JADWAL PIKET — RESPONSIVE HEIGHT + iOS SCROLL
        ========================================================= */
 
-    /* Parent wrapper — pastikan card sejajar */
+    /* Parent wrapper — pastikan card sejajar di desktop */
     .lg\:col-span-3 {
       align-items: stretch !important;
     }
 
-    /* Outer Card PR & Piket — fixed height sama presisi */
+    /* Outer Card PR & Piket — default mobile: auto height */
     #pr,
     #piket {
-      height: 480px !important;
-      overflow: hidden !important;
+      height: auto !important;
+      min-height: fit-content !important;
+      overflow: visible !important;
       display: flex !important;
       flex-direction: column !important;
+      flex-shrink: 0 !important;
     }
 
-    /* Inner List — isi sisa ruang + scroll iOS mulus */
+    /* Inner List — mobile: bounded scroll */
     #prList,
     #piketList {
-      flex: 1 !important;
+      max-height: 320px !important;
       overflow-y: scroll !important;
       -webkit-overflow-scrolling: touch !important;
       min-height: 0 !important;
+      flex-shrink: 0 !important;
       padding-bottom: 1rem !important;
       scrollbar-width: thin;
       scrollbar-color: transparent transparent;
@@ -238,6 +241,21 @@
     #prList::-webkit-scrollbar-thumb,
     #piketList::-webkit-scrollbar-thumb {
       background: transparent;
+    }
+
+    /* Desktop / Tablet — sama kan tinggi card + flex fill */
+    @media (min-width: 768px) {
+      #pr,
+      #piket {
+        height: 450px !important;
+        overflow: hidden !important;
+      }
+
+      #prList,
+      #piketList {
+        flex: 1 !important;
+        max-height: none !important;
+      }
     }
 
     /* Card Kas — biarkan auto mengikuti isi form */
