@@ -250,68 +250,42 @@ body {
   padding-right: 4px;
 }
 
-/* PR List — bounded scroll area (override flex-1 collapse di Safari) */
-#prList {
-  height: 340px !important;
-  max-height: 340px !important;
-  overflow-y: scroll !important;
-  -webkit-overflow-scrolling: touch !important;
-  min-height: 0 !important;
-  flex: none !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  touch-action: pan-y !important;
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-}
-#prList::-webkit-scrollbar {
-  width: 3px;
-}
-#prList::-webkit-scrollbar-thumb {
-  background: transparent;
+/* =========================================================
+   PR & TUGAS / JADWAL PIKET — SAME HEIGHT + iOS SCROLL
+   ========================================================= */
+
+/* Parent wrapper — pastikan card sejajar */
+.lg\:col-span-3 {
+  align-items: stretch !important;
 }
 
-/* Piket List — bounded scroll area (override flex-1 collapse di Safari) */
+/* Outer Card PR & Piket — fixed height sama presisi */
+#pr,
+#piket {
+  height: 480px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Inner List — isi sisa ruang + scroll iOS mulus */
+#prList,
 #piketList {
-  height: 340px !important;
-  max-height: 340px !important;
+  flex: 1 !important;
   overflow-y: scroll !important;
   -webkit-overflow-scrolling: touch !important;
   min-height: 0 !important;
-  flex: none !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  touch-action: pan-y !important;
+  padding-bottom: 1rem !important;
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
 }
+#prList::-webkit-scrollbar,
 #piketList::-webkit-scrollbar {
   width: 3px;
 }
+#prList::-webkit-scrollbar-thumb,
 #piketList::-webkit-scrollbar-thumb {
   background: transparent;
-}
-
-/* Card PR — batasi tinggi agar tidak melar */
-#pr {
-  display: flex !important;
-  flex-direction: column !important;
-  min-height: fit-content !important;
-  flex-shrink: 0 !important;
-  width: 100% !important;
-  overflow: visible !important;
-  height: 380px !important;
-}
-
-/* Card Piket — batasi tinggi agar tidak melar */
-#piket {
-  display: flex !important;
-  flex-direction: column !important;
-  min-height: fit-content !important;
-  flex-shrink: 0 !important;
-  width: 100% !important;
-  overflow: visible !important;
-  height: 380px !important;
 }
 
 /* Card Kas — biarkan auto mengikuti isi form */
