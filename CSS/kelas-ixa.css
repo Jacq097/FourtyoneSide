@@ -174,3 +174,55 @@
       background-size: cover !important;
       min-height: 100vh !important;
     }
+
+/* =========================================================
+   FIX KHUSUS iOS / SAFARI IPHONE (UANG KAS & TABLE OVERFLOW)
+   ========================================================= */
+
+/* 1. Perbaikan Body Height untuk Safari Mobile */
+html {
+  height: -webkit-fill-available;
+}
+body {
+  min-height: 100vh !important;
+  min-height: -webkit-fill-available !important;
+}
+
+/* 2. Fix Smooth Scroll & Touch Handling khusus iOS */
+.kas-table-wrapper, 
+div[class*="kas"], 
+div[id*="kas"] {
+  -webkit-overflow-scrolling: touch !important; /* Wajib di iOS agar scroll tidak macet */
+}
+
+/* 3. Fix Tabel Uang Kas Gepeng / Melebar Rusak di iPhone */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Jika Uang Kas menggunakan Wrapper Tabel */
+.table-responsive,
+.kas-container {
+  width: 100%;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* Biar isi tabel kas tidak saling menumpuk/terlipat di layar kecil */
+.table-responsive table,
+div[id*="kas"] table {
+  min-width: 480px; /* Menjaga struktur kolom kas tetap rapi */
+}
+
+/* 4. Fix Flexbox Collapse pada Card / Ringkasan Kas di iPhone */
+.card {
+  min-width: 0; /* Mencegah Flexbox meluap keluar layar iOS */
+}
+
+/* 5. Fix Tombol & Badges Uang Kas di Mobile */
+[onclick*="kas"] span,
+.btn-kas span {
+  display: inline-block;
+  white-space: nowrap;
+}
