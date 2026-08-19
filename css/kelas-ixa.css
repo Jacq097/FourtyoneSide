@@ -254,24 +254,42 @@ body {
 #prList {
   overflow-y: scroll !important;
   -webkit-overflow-scrolling: touch !important;
-  max-height: 360px !important;
+  max-height: 340px !important;
   min-height: 0 !important;
-  flex-shrink: 0 !important;
+  flex: none !important;
   height: auto !important;
   visibility: visible !important;
   opacity: 1 !important;
+  touch-action: pan-y !important;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+#prList::-webkit-scrollbar {
+  width: 3px;
+}
+#prList::-webkit-scrollbar-thumb {
+  background: transparent;
 }
 
 /* Piket List — bounded scroll area (override flex-1 collapse di Safari) */
 #piketList {
   overflow-y: scroll !important;
   -webkit-overflow-scrolling: touch !important;
-  max-height: 360px !important;
+  max-height: 340px !important;
   min-height: 0 !important;
-  flex-shrink: 0 !important;
+  flex: none !important;
   height: auto !important;
   visibility: visible !important;
   opacity: 1 !important;
+  touch-action: pan-y !important;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+#piketList::-webkit-scrollbar {
+  width: 3px;
+}
+#piketList::-webkit-scrollbar-thumb {
+  background: transparent;
 }
 
 /* Card PR — batasi tinggi agar tidak melar */
