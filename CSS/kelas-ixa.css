@@ -244,6 +244,8 @@ body {
   flex-direction: column !important;
   min-height: fit-content !important;
   flex-shrink: 0 !important;
+  width: 100% !important;
+  overflow: visible !important;
 }
 
 /* Form Input Kas — pastikan input radio & nominal tetap tampil */
@@ -251,6 +253,8 @@ body {
   display: block !important;
   min-height: fit-content !important;
   flex-shrink: 0 !important;
+  width: 100% !important;
+  overflow: visible !important;
 }
 
 /* Scroll wrapper di dalam Kas — override Safari flex calculation */
@@ -264,11 +268,30 @@ body {
   flex-direction: column !important;
   min-height: fit-content !important;
   flex-shrink: 0 !important;
+  width: 100% !important;
+  overflow: visible !important;
 }
 
 /* List PR — pastikan konten tidak collapse */
 #prList {
   min-height: fit-content !important;
   flex-shrink: 0 !important;
+}
+
+/* =========================================================
+   DEBUGGING OUTLINE MERAH — HAPUS SETELAH UI NORMAL
+   ========================================================= */
+
+/* Outline merah untuk debug posisi elemen yang hilang di iPhone */
+#kas {
+  border: 2px solid red !important;
+}
+
+#kasForm {
+  border: 2px solid red !important;
+}
+
+#pr {
+  border: 2px solid red !important;
 }
 
