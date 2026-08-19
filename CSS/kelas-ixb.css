@@ -158,11 +158,32 @@
 
     /* 3. KHUSUS TOMBOL RIWAYAT KAS (Agar Tidak Gepeng) */
     [onclick*="riwayat"],
-    [onclick*="Kas"],
-    [onclick*="kas"],
     .btn-kas {
       min-height: 42px !important;
       flex-shrink: 0 !important;
+    }
+
+    /* =========================================================
+       ISOLASI MODAL RIWAYAT KAS — override selector berbahaya
+       ========================================================= */
+
+    /* 1. Pastikan modal TERSEMBUNYI jika .hidden ada */
+    #kasRiwayatModal.hidden {
+      display: none !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    /* 2. Hanya tampil sebagai flex ketika .hidden DICABUT */
+    #kasRiwayatModal:not(.hidden) {
+      display: flex !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+
+    /* 3. Fallback: paksa default tersembunyi (override div[id*="kas"] dll) */
+    #kasRiwayatModal {
+      display: none !important;
     }
 
     html {
