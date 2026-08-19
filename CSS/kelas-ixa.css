@@ -252,12 +252,12 @@ body {
 
 /* PR List — bounded scroll area (override flex-1 collapse di Safari) */
 #prList {
+  height: 340px !important;
+  max-height: 340px !important;
   overflow-y: scroll !important;
   -webkit-overflow-scrolling: touch !important;
-  max-height: 340px !important;
   min-height: 0 !important;
   flex: none !important;
-  height: auto !important;
   visibility: visible !important;
   opacity: 1 !important;
   touch-action: pan-y !important;
@@ -273,12 +273,12 @@ body {
 
 /* Piket List — bounded scroll area (override flex-1 collapse di Safari) */
 #piketList {
+  height: 340px !important;
+  max-height: 340px !important;
   overflow-y: scroll !important;
   -webkit-overflow-scrolling: touch !important;
-  max-height: 340px !important;
   min-height: 0 !important;
   flex: none !important;
-  height: auto !important;
   visibility: visible !important;
   opacity: 1 !important;
   touch-action: pan-y !important;
