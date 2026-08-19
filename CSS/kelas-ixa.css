@@ -212,3 +212,53 @@ div[id*="kasForm"] {
   display: inline-block;
   white-space: nowrap;
 }
+
+/* =========================================================
+   FIX TOTAL UNTUK UANG KAS & FORM TRANSAKSI DI IPHONE (SAFARI)
+   ========================================================= */
+
+/* 1. Paksa Card Uang Kas & Seluruh Isinya Agar Tidak Gepeng / Terlipat di iOS */
+.card:has(#totalSaldo),
+.card:has(#nominalInput),
+div[id*="kas"],
+div[id*="Kas"] {
+  display: flex !important;
+  flex-direction: column !important;
+  height: auto !important;
+  min-height: fit-content !important;
+  max-height: none !important;
+  overflow: visible !important;
+  flex-shrink: 0 !important; /* Mencegah Safari memperkecil/mengepengkan card */
+}
+
+/* 2. Paksa Form Tambah Transaksi (Pemasukan/Pengeluaran & Input Nominal) Muncul Sempurna */
+div[id*="kas"] > div,
+div[id*="Kas"] > div,
+.card-flat,
+form[id*="kas"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  min-height: fit-content !important;
+  flex-shrink: 0 !important;
+}
+
+/* 3. Perbaikan Pilihan Radio Button (Pemasukan / Pengeluaran) di Safari */
+div[id*="kas"] label,
+div[id*="Kas"] label {
+  display: flex !important;
+  align-items: center !important;
+  min-height: 44px !important; /* Ukuran standar tap target iOS */
+  flex-shrink: 0 !important;
+}
+
+/* 4. Fix Input Nominal di iPhone Agar Tidak Collapsed / Gepeng */
+input[type="number"],
+input[type="text"] {
+  -webkit-appearance: none !important; /* Hilangkan styling bawaan Safari */
+  appearance: none !important;
+  min-height: 42px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
