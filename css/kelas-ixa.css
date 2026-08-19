@@ -234,3 +234,41 @@ body {
   white-space: nowrap;
 }
 
+/* =========================================================
+   FIX iOS SAFARI — KAS FORM & PR/TUGAS SECTION
+   ========================================================= */
+
+/* Card Kas — jangan collapse di iOS */
+#kas {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: fit-content !important;
+  flex-shrink: 0 !important;
+}
+
+/* Form Input Kas — pastikan input radio & nominal tetap tampil */
+#kasForm {
+  display: block !important;
+  min-height: fit-content !important;
+  flex-shrink: 0 !important;
+}
+
+/* Scroll wrapper di dalam Kas — override Safari flex calculation */
+#kas div.overflow-y-auto {
+  min-height: 0 !important;
+}
+
+/* Card PR & Tugas — jangan collapse di iOS */
+#pr {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: fit-content !important;
+  flex-shrink: 0 !important;
+}
+
+/* List PR — pastikan konten tidak collapse */
+#prList {
+  min-height: fit-content !important;
+  flex-shrink: 0 !important;
+}
+
