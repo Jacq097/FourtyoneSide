@@ -315,6 +315,8 @@ tailwind.config = {
     const editInstagram = document.getElementById('editInstagram');
     const editTiktok = document.getElementById('editTiktok');
     const btnBatalEdit = document.getElementById('btnBatalEdit');
+    const btnHapusFoto = document.getElementById('btnHapusFoto');
+    const hapusFotoWrapper = document.getElementById('hapusFotoWrapper');
 
     // Crop modal elements
     const cropModal = document.getElementById('cropModal');
@@ -328,6 +330,43 @@ tailwind.config = {
     let cropper = null;
     let croppedBlob = null;
 
+    function getFileNameFromUrl(url) {
+      if (!url) return null;
+      const parts = url.split('/');
+      return parts[parts.length - 1];
+    }
+
+    async function deleteAvatarFromStorage(publicUrl) {
+      console.log("--- PROSES HAPUS FOTO DIMULAI ---");
+      console.log("1. URL Asli yang diterima:", publicUrl);
+
+      if (!publicUrl) {
+        console.warn("URL foto kosong/null, proses hapus dibatalkan.");
+        return false;
+      }
+
+      const fileName = getFileNameFromUrl(publicUrl);
+      console.log("2. Nama File hasil ekstraksi:", fileName);
+
+      if (!fileName) {
+        console.error("Gagal mengekstrak nama file dari URL!");
+        return false;
+      }
+
+      console.log("3. Mengirim perintah .remove() ke bucket 'avatars'...");
+      const { data, error } = await supabase.storage
+        .from('avatars')
+        .remove([fileName]);
+
+      if (error) {
+        console.error("❌ GAGAL HAPUS DI SUPABASE STORAGE:", error.message, error);
+        return false;
+      }
+
+      console.log("✅ BERHASIL HAPUS DI SUPABASE STORAGE:", data);
+      return true;
+    }
+
     function openEditModal() {
       if (window.__isOwner === false) return;
       const userDb = window.__userDb || {};
@@ -336,6 +375,12 @@ tailwind.config = {
       editInstagram.value = userDb.instagram_url || '';
       editTiktok.value = userDb.tiktok_url || '';
       croppedBlob = null;
+
+      const fotoUrl = userDb.foto_url || userDb.foto || userDb.avatar;
+      if (hapusFotoWrapper) {
+        hapusFotoWrapper.classList.toggle('hidden', !fotoUrl);
+      }
+
       editProfileModal.classList.remove('hidden');
       editProfileModal.classList.add('flex');
     }
@@ -354,18 +399,32 @@ tailwind.config = {
         zoomSlider.value = 0;
 
         if (cropper) cropper.destroy();
-        cropper = new Cropper(cropImage, {
-          aspectRatio: 1,
-          viewMode: 1,
-          background: false,
-          zoomable: true,
-          dragMode: 'move',
-          autoCropArea: 1,
-          responsive: true,
-          checkCrossOrigin: false
-        });
 
-        cropper.zoomTo(0);
+        const initCropper = () => {
+          try {
+            cropper = new Cropper(cropImage, {
+              aspectRatio: 1,
+              viewMode: 1,
+              background: false,
+              zoomable: true,
+              dragMode: 'move',
+              autoCropArea: 1,
+              responsive: true,
+              checkCrossOrigin: false,
+              ready() {
+                cropper.zoomTo(0);
+              }
+            });
+          } catch (err) {
+            console.error('Error init cropper:', err);
+          }
+        };
+
+        if (cropImage.complete && cropImage.naturalWidth > 0) {
+          initCropper();
+        } else {
+          cropImage.onload = initCropper;
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -396,6 +455,62 @@ tailwind.config = {
     closeEditModal.addEventListener('click', closeEditModalFn);
     editModalBackdrop.addEventListener('click', closeEditModalFn);
     btnBatalEdit.addEventListener('click', closeEditModalFn);
+
+    if (btnHapusFoto) {
+      btnHapusFoto.addEventListener('click', async () => {
+        console.log("--- TOMBOL HAPUS FOTO DIKLIK ---");
+        if (window.__isOwner === false) {
+          console.warn("Bukan owner, batalkan hapus.");
+          return;
+        }
+        const userDb = window.__userDb || {};
+        const fotoUrl = userDb.foto_url || userDb.foto || userDb.avatar;
+        console.log("Foto URL dari userDb:", fotoUrl);
+
+        if (!fotoUrl) {
+          console.warn("Tidak ada fotoUrl, batalkan hapus.");
+          return;
+        }
+
+        if (!confirm('Apakah kamu yakin ingin menghapus foto profil?')) {
+          console.log("User membatalkan konfirmasi hapus.");
+          return;
+        }
+
+        const deleted = await deleteAvatarFromStorage(fotoUrl);
+        console.log("Hasil deleteAvatarFromStorage:", deleted);
+        if (!deleted) {
+          alert('Gagal menghapus foto dari storage.');
+          return;
+        }
+
+        console.log("Mengupdate kolom foto_url di tabel users...");
+        const { error } = await supabase
+          .from('users')
+          .update({ foto_url: null })
+          .eq('username', currentUser.username);
+
+        if (error) {
+          console.error('Gagal hapus foto profil di DB:', error.message);
+          alert('Gagal menghapus foto profil: ' + error.message);
+          return;
+        }
+
+        console.log("Berhasil update DB. Reset state lokal & UI...");
+        if (window.__userDb) {
+          window.__userDb.foto_url = null;
+          window.__userDb.foto = null;
+          window.__userDb.avatar = null;
+        }
+
+        const fotoEl = document.getElementById('profileFoto');
+        if (fotoEl) fotoEl.src = 'https://ui-avatars.com/api/?name=User&background=random';
+
+        if (hapusFotoWrapper) hapusFotoWrapper.classList.add('hidden');
+
+        closeEditModalFn();
+      });
+    }
 
     closeCropModal.addEventListener('click', closeCropModalFn);
     cropModalBackdrop.addEventListener('click', closeCropModalFn);
@@ -431,6 +546,13 @@ tailwind.config = {
 
         const ext = 'jpg';
         const fileName = `avatar_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+
+        const userDb = window.__userDb || {};
+        const oldFotoUrl = userDb.foto_url || userDb.foto || userDb.avatar;
+        if (oldFotoUrl) {
+          await deleteAvatarFromStorage(oldFotoUrl);
+        }
+
         const { error: uploadError } = await supabase.storage
           .from('avatars')
           .upload(fileName, blob, { upsert: true, contentType: 'image/jpeg' });
@@ -575,21 +697,39 @@ const tbody = document.getElementById('absensiBody');
       }
       const days = getLastSchoolDays(5);
 
-// ===== COCOKKAN NAMA SECARA FLEKSIBEL (ilike) =====
-      // Ambil identifier nama user yang login dengan aman, sesuai prioritas.
-      var userIdentifier = (currentUser ? currentUser.nama_lengkap : null) || (currentUser ? currentUser.name : null) || (currentUser ? currentUser.username : null) || (userDb ? userDb.nama_lengkap : null) || (userDb ? userDb.username : null);
+// ===== DETERMINE TARGET USER =====
+      const targetUsername = (userDb ? userDb.username : null) || (currentUser ? currentUser.username : null);
+      const targetFullName = (userDb ? (userDb.nama_lengkap || userDb.nama) : null) || (currentUser ? (currentUser.nama_lengkap || currentUser.nama) : null);
+      if (!targetUsername && !targetFullName) return;
 
-      // Tarik data absensi menggunakan pencarian fleksibel (ilike) oleh nama user.
-      const { data: absensiData, error } = await supabase
+// ===== AUTO-EXPIRE PENDING ABSENSI LAMPAU =====
+      const todayObj = new Date();
+      const todayOffset = todayObj.getTimezoneOffset() * 60000;
+      const todayStr = new Date(todayObj.getTime() - todayOffset).toISOString().split('T')[0];
+
+      // Targetkan nama dari profil yang sedang dibuka
+      console.log("🔍 Mencari absensi untuk Username:", targetUsername, "| Nama Lengkap:", targetFullName);
+
+      // Tarik data absensi untuk user target (bukan currentUser)
+      let absensiQuery = supabase
         .from('absensi')
         .select('*')
-        .ilike('nama_siswa', `%${userIdentifier}%`)
         .gte('tanggal', days[0].iso)
         .lte('tanggal', days[days.length - 1].iso)
         .order('tanggal');
 
+      if (targetUsername && targetFullName) {
+        absensiQuery = absensiQuery.or(`nama_siswa.ilike.${targetUsername},nama_siswa.ilike.${targetFullName}`);
+      } else if (targetUsername) {
+        absensiQuery = absensiQuery.eq('nama_siswa', targetUsername);
+      } else if (targetFullName) {
+        absensiQuery = absensiQuery.eq('nama_siswa', targetFullName);
+      }
+
+      const { data: absensiData, error } = await absensiQuery;
+
       // ===== DEBUG LOG (cek di Console F12) =====
-      console.log('userIdentifier:', userIdentifier);
+      console.log('targetUsername:', targetUsername, '| targetFullName:', targetFullName);
       console.log('Rentang tanggal (iso):', days[0].iso, 's/d', days[days.length - 1].iso);
       console.log('Data Absensi Ditemukan:', absensiData);
 
@@ -602,6 +742,25 @@ const tbody = document.getElementById('absensiBody');
         </td></tr>`;
         lucide.createIcons();
         return;
+      }
+
+      // Auto-update DB: ubah pending lampau menjadi Alpa / Ditolak
+      const expiredPending = (data || []).filter(r => {
+        const approval = (r.status_approval || r.status_acc || '').toLowerCase();
+        const isPending = approval === 'pending' || approval === 'belum acc' || approval === 'menunggu' || approval === 'menunggu acc';
+        return r.tanggal < todayStr && isPending;
+      });
+      if (expiredPending.length > 0) {
+        const ids = expiredPending.map(r => r.id);
+        const { error: updateError } = await supabase
+          .from('absensi')
+          .update({ keterangan: 'Alpa', status_approval: 'ditolak', status_acc: 'ditolak' })
+          .in('id', ids);
+        if (updateError) {
+          console.error('Auto-expire update error:', updateError.message);
+        } else {
+          console.log('Auto-expired absensi IDs:', ids);
+        }
       }
 
       // Build lookup by tanggal
@@ -628,6 +787,14 @@ let hadirCount = 0;
         const isApproved = approval === 'approved' || approval.includes('sudah') || approval === 'acc' || approval === 'disetujui';
         const isPending = approval === 'pending' || approval === 'belum acc' || approval === 'menunggu' || approval === 'menunggu acc';
 
+        // Auto-expire: jika tanggal lampau dan masih menunggu ACC, anggap Alpa/Ditolak
+        const isExpired = rec && day.iso < todayStr && isPending;
+        if (isExpired) {
+          ket = 'Alpa';
+          ketColor = 'text-slate-600';
+          ketBg = 'bg-slate-50';
+        }
+
         // Hitung HADIR hanya jika keterangan === 'Hadir' DAN sudah di-ACC (Approved)
         const isHadirApproved = rec && (rec.keterangan || '').toLowerCase() === 'hadir' && isApproved;
         if (isHadirApproved) hadirCount++;
@@ -639,7 +806,11 @@ let hadirCount = 0;
         } else if (isApproved) {
           statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200 whitespace-nowrap">Disetujui</span>`;
         } else if (isPending) {
-          statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200 whitespace-nowrap">Menunggu ACC</span>`;
+          if (isExpired) {
+            statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200 whitespace-nowrap">Ditolak</span>`;
+          } else {
+            statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200 whitespace-nowrap">Menunggu ACC</span>`;
+          }
         } else {
           statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 whitespace-nowrap">${rec.status_approval || rec.status_acc || 'Pending'}</span>`;
         }
@@ -677,18 +848,64 @@ let hadirCount = 0;
     // Catatan: loadAbsensi() dipanggil di dalam renderProfile()
     // setelah userDb berhasil di-fetch, supaya memakai userDb.nama_lengkap.
 
+    // ===== Image Preview Lightbox =====
+    const previewModal = document.getElementById('imagePreviewModal');
+    const previewImage = document.getElementById('previewImage');
+    const closePreviewBtn = document.getElementById('closePreviewBtn');
+    const previewBackdrop = document.getElementById('previewBackdrop');
+    const profileFoto = document.getElementById('profileFoto');
+
+    function openPreview(src) {
+      if (!src) return;
+      previewImage.src = src;
+      previewModal.classList.remove('hidden');
+      previewModal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+      void previewModal.offsetWidth;
+      previewModal.classList.add('is-open');
+    }
+
+    function closePreview() {
+      previewModal.classList.remove('is-open');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        previewModal.classList.add('hidden');
+        previewModal.classList.remove('flex');
+        previewImage.src = '';
+      }, 300);
+    }
+
+    if (closePreviewBtn) closePreviewBtn.addEventListener('click', closePreview);
+    if (previewBackdrop) previewBackdrop.addEventListener('click', closePreview);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !previewModal.classList.contains('hidden')) {
+        closePreview();
+      }
+    });
+
+    if (profileFoto) {
+      profileFoto.addEventListener('click', () => {
+        openPreview(profileFoto.src);
+      });
+    }
+
     // ===== Logout =====
     document.getElementById('logoutBtn').addEventListener('click', async () => {
-      // Also sign out Supabase if session exists
-      try {
-        var result = await supabase.auth.getSession();
-        if (result.data && result.data.session) await supabase.auth.signOut();
-      } catch (e) {}
-      safeStorageRemove(sessionStorage, 'angkatan41_user');
-      safeStorageRemove(sessionStorage, 'user');
-      safeStorageRemove(localStorage, 'angkatan41_user');
-      safeStorageRemove(localStorage, 'user');
-      window.location.href = 'login.html';
+      showLogoutModal(async function() {
+        try {
+          var result = await supabase.auth.getSession();
+          if (result.data && result.data.session) await supabase.auth.signOut();
+        } catch (e) {}
+        const keys = ['angkatan41_user', 'currentUser', 'user', 'angkatan41_user_session'];
+        const storages = [window.sessionStorage, window.localStorage];
+        for (const store of storages) {
+          for (const key of keys) {
+            safeStorageRemove(store, key);
+          }
+        }
+        window.location.href = 'index.html';
+      });
     });
 
     // ===== Reveal on scroll =====

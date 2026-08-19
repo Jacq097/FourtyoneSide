@@ -20,6 +20,8 @@ tailwind.config = {
       jumlahSiswa: 10
     };
 
+    const CURRENT_PAGE_CLASS = kelasConfig.className;
+
     // apply config
     document.querySelectorAll('#className, #bannerClass, #bannerClassName, #footClass').forEach(el => el.textContent = kelasConfig.className);
     document.getElementById('classSlogan').textContent = kelasConfig.slogan;
@@ -44,6 +46,10 @@ tailwind.config = {
         toast('Jadwal dihapus!');
       }
       if (type === 'pr') {
+        if (!isSekretaris()) {
+          alert('Akses ditolak! Hanya Sekretaris yang dapat menghapus tugas.');
+          return;
+        }
         const item = prData[index];
         if (!item) return;
         if (item.id) {
@@ -54,6 +60,12 @@ tailwind.config = {
         prData.splice(index, 1); renderPR();
       }
       if (type === 'piket') { piketData.splice(index, 1); renderPiket(); }
+    }
+
+    function confirmDeletePR(index) {
+      showDeleteConfirmModal(function() {
+        deleteItem('pr', index);
+      });
     }
 
 // ===== RENDER JADWAL (via renderJadwalToUI ke #jadwal-container) =====
@@ -80,6 +92,27 @@ tailwind.config = {
       });
     });
 
+    function autoSelectTodaySchedule() {
+      const daftarHari = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
+      const todayIndex = new Date().getDay();
+      let currentDayName = daftarHari[todayIndex];
+
+      if (currentDayName === 'sabtu' || currentDayName === 'minggu') {
+        currentDayName = 'senin';
+      }
+
+      const capitalizedDay = currentDayName.charAt(0).toUpperCase() + currentDayName.slice(1);
+
+      const targetTab = document.querySelector('.day-tab[data-day="' + capitalizedDay + '"]');
+      if (!targetTab) return;
+
+      document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+      targetTab.classList.add('active');
+
+      currentDay = capitalizedDay;
+      renderJadwal();
+    }
+
     // ===== RENDER PR =====
     function renderPR() {
       // Diisolasi dengan try/catch (anti chain-reaction crash di iOS Safari).
@@ -94,7 +127,7 @@ tailwind.config = {
           <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-blue-300 transition group">
             <div class="flex items-center justify-between">
 <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 editable" data-type="pr" data-idx="${i}" data-field="mapel">${row.mapel}</span>
-              ${canManagePR ? `<button onclick="deleteItem('pr',${i})" class="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
+              ${canManagePR ? `<button onclick="confirmDeletePR(${i})" class="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
             </div>
             <p class="mt-2 text-sm text-slate-700 editable" data-type="pr" data-idx="${i}" data-field="desc">${row.desc}</p>
             <p class="mt-1 text-[11px] text-blue-600 inline-flex items-center gap-1">
@@ -120,7 +153,7 @@ tailwind.config = {
         }
         const canManage = canManageSchedule();
         list.innerHTML = piketData.map((row, i) => `
-          <div class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-white group">
+          <div class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-white group" data-piket-day="${String(row.hari || '').toLowerCase()}">
             <span class="shrink-0 w-16 text-xs font-bold text-blue-700">${row.hari}</span>
             <p class="flex-1 text-sm text-slate-700">${row.nama_siswa}</p>
             ${canManage ? `
@@ -130,9 +163,28 @@ tailwind.config = {
           </div>
         `).join('');
         lucide.createIcons();
+        highlightTodayPiket();
       } catch (e) {
         debugAlert('renderPiket', e);
       }
+    }
+
+    function highlightTodayPiket() {
+      const daftarHari = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
+      const todayIndex = new Date().getDay();
+      const todayName = daftarHari[todayIndex];
+
+      const rows = document.querySelectorAll('[data-piket-day]');
+      rows.forEach(function(row) {
+        row.classList.remove('border-2', 'border-blue-500', 'bg-blue-50', 'shadow-md');
+      });
+
+      if (todayName === 'sabtu' || todayName === 'minggu') return;
+
+      const targetRow = document.querySelector('[data-piket-day="' + todayName + '"]');
+      if (!targetRow) return;
+
+      targetRow.classList.add('border-2', 'border-blue-500', 'bg-blue-50', 'shadow-md');
     }
 
     // ===== LOAD PIKET (READ dari Supabase) =====
@@ -438,7 +490,7 @@ tailwind.config = {
         const days = ['Senin','Selasa','Rabu','Kamis','Jumat'];
         days.forEach(function(d) { jadwalData[d] = (jadwalMap[d] || []).map(function(r) { return { id: r.id, jam: r.jam, mapel: r.mapel, guru: r.guru }; }); });
 
-        renderJadwalToUI(jadwalMap);
+        autoSelectTodaySchedule();
       } catch (err) {
         debugAlert('fetchAndRenderJadwal', err);
         container.innerHTML = `
@@ -634,20 +686,7 @@ tailwind.config = {
       // Diisolasi try/catch: kalau ini gagal, jangan sampai ikut menjatuhkan
       // alur restoreSession/initialLoad lainnya (Tugas/Piket tetap harus tampil).
       try {
-        if (!currentUser) return;
-        var role = (currentUser.role || '').toLowerCase();
-        var userClass = String(currentUser.kelas || currentUser.class || currentUser.cls || '').toLowerCase();
-        var pageClass = String(kelasConfig.className || '').toLowerCase();
-        var isSameClass = userClass.includes(pageClass) || userClass.includes(pageClass.replace('-', ''));
-
-        if (role === 'bendahara' && isSameClass) {
-          var kasForm = document.getElementById('kasForm');
-          if (kasForm) kasForm.classList.remove('hidden');
-          var kasAdminElements = document.querySelectorAll('.kas-admin-only');
-          for (var i = 0; i < kasAdminElements.length; i++) {
-            kasAdminElements[i].classList.remove('hidden');
-          }
-        }
+        checkRoleKasAccess();
       } catch (e) {
         debugAlert('forceBendaharaUI', e);
       }
@@ -757,8 +796,8 @@ tailwind.config = {
 
       canManagePR = false;
 
-      var kasFormGuest = document.getElementById('kasForm');
-      if (kasFormGuest) kasFormGuest.classList.add('hidden');
+      var kasCard = document.getElementById('kas');
+      if (kasCard) kasCard.classList.add('hidden');
 
       try { renderJadwal(); } catch (e) { debugAlert('renderJadwal (resetToGuestMode)', e); }
       try { renderPR(); } catch (e) { debugAlert('renderPR (resetToGuestMode)', e); }
@@ -866,6 +905,12 @@ currentUser = { id: data.user.id, name: profile.nama, cls: profile.kelas, role: 
       const r = normRole(currentUser && currentUser.role);
       return isThisClassUser() && GROUP_B_ROLES.includes(r);
     }
+    function isSekretaris() {
+      if (!currentUser) return false;
+      const roleMatch = normRole(currentUser.role) === 'sekretaris';
+      const userClass = String(currentUser.kelas || currentUser.cls || currentUser.class || '').toUpperCase();
+      return roleMatch && userClass === CURRENT_PAGE_CLASS;
+    }
     // Absen & kelola PR/Tugas: admin global ATAU user kelas ini dengan role Kelompok A.
     function canAbsenAndManagePR() {
       return isGlobalAdmin() || isGroupA();
@@ -888,6 +933,56 @@ currentUser = { id: data.user.id, name: profile.nama, cls: profile.kelas, role: 
       const isSameClass = userClass.includes(pageClass) || userClass.includes(pageClass.replace('-', ''));
 
       return isSameClass;
+    }
+
+    // ===== KAS ROLE-BASED ACCESS =====
+    function updateKasSubmitListener() {
+      const kasForm = document.getElementById('kasForm');
+      if (!kasForm || !kasForm._kasHandler) return;
+
+      const userRole = (currentUser?.role || currentUser?.jabatan || '').toLowerCase();
+      const userKelas = (currentUser?.kelas || currentUser?.cls || currentUser?.class || '').toUpperCase();
+      const targetPageKelas = kelasConfig.className.toUpperCase();
+      const isAuthorized = (userRole === 'bendahara') && (userKelas === targetPageKelas);
+
+      if (isAuthorized) {
+        if (!kasForm._listenerAttached) {
+          kasForm.addEventListener('submit', kasForm._kasHandler);
+          kasForm._listenerAttached = true;
+        }
+      } else {
+        if (kasForm._listenerAttached) {
+          kasForm.removeEventListener('submit', kasForm._kasHandler);
+          kasForm._listenerAttached = false;
+        }
+      }
+    }
+
+    function checkRoleKasAccess() {
+      const kasFormEl = document.getElementById('kasForm');
+      if (!kasFormEl) return;
+
+      if (!currentUser) {
+        kasFormEl.classList.add('hidden');
+        kasFormEl.style.setProperty('display', 'none', 'important');
+        return;
+      }
+
+      const userRole = (currentUser?.role || currentUser?.jabatan || '').toLowerCase();
+      const userKelas = (currentUser?.kelas || currentUser?.cls || currentUser?.class || '').toUpperCase();
+      const targetPageKelas = (kelasConfig?.className || '').toUpperCase();
+
+      const isAuthorized = (userRole === 'bendahara') && (userKelas === targetPageKelas);
+
+      if (isAuthorized) {
+        kasFormEl.classList.remove('hidden');
+        kasFormEl.style.setProperty('display', 'block', 'important');
+      } else {
+        kasFormEl.classList.add('hidden');
+        kasFormEl.style.setProperty('display', 'none', 'important');
+      }
+
+      updateKasSubmitListener();
     }
 
     function applyRolePermissions() {
@@ -940,19 +1035,12 @@ currentUser = { id: data.user.id, name: profile.nama, cls: profile.kelas, role: 
         accPanel.classList.toggle('hidden', !canManSched);
       }
 
-      // ===== PR/TUGAS MANAGEMENT (KELOMPOK A): semua siswa kelas ini =====
-      // Semua siswa di kelas ini boleh menambah/mengedit Tugas/PR di kelasnya sendiri
-      canManagePR = canAbsenPR;
-      document.getElementById('addPrBtn').classList.toggle('hidden', !canAbsenPR);
+      // ===== PR/TUGAS MANAGEMENT: HANYA SEKRETARIS =====
+      canManagePR = isSekretaris();
+      document.getElementById('addPrBtn').classList.toggle('hidden', !isSekretaris());
 
       // ===== KAS MANAGEMENT =====
-      // Tampilkan/sembunyikan elemen form Bendahara/Admin
-      const kasAdminElements = document.querySelectorAll('.kas-admin-only');
-      if (canManageKas()) {
-        kasAdminElements.forEach(el => el.classList.remove('hidden', 'd-none'));
-      } else {
-        kasAdminElements.forEach(el => el.classList.add('hidden'));
-      }
+      checkRoleKasAccess();
 
       // Re-render: setiap panggilan dipisah try/catch supaya satu fungsi yang
       // error TIDAK menghentikan fungsi render lain sesudahnya (anti chain-reaction).
@@ -1237,6 +1325,10 @@ const payload = {
     let addType = null;
 
     function openEditModal(type) {
+      if (type === 'pr' && !isSekretaris()) {
+        alert('Akses ditolak! Hanya Sekretaris yang dapat menambah atau mengedit tugas.');
+        return;
+      }
       addType = type;
       editFields.innerHTML = '';
       if (type === 'jadwal') {
@@ -1299,6 +1391,10 @@ document.getElementById('addPiketBtn').addEventListener('click', () => openPiket
         renderJadwal();
         toast('Jadwal ditambahkan!');
       } else if (addType === 'pr') {
+        if (!isSekretaris()) {
+          alert('Akses ditolak! Hanya Sekretaris yang dapat menambah atau mengedit tugas.');
+          return;
+        }
         const payload = {
           kelas: kelasConfig.className,
           mapel: document.getElementById('nf_mapel').value,
@@ -1325,33 +1421,19 @@ document.getElementById('addPiketBtn').addEventListener('click', () => openPiket
     });
 
     // ===== TAMBAH KAS (via form) =====
-    document.getElementById('kasForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!currentUser) { toast('Login dulu.', 'error'); return; }
-
-      const userRole = String(currentUser.role || currentUser.jabatan || '').toLowerCase();
-      const userClass = String(currentUser.kelas || currentUser.class || currentUser.cls || '').toLowerCase();
-      const pageClass = String(kelasConfig.className || '').toLowerCase();
-
-      if (userRole !== 'bendahara') {
-        alert('Akses khusus Bendahara!');
-        return;
-      }
-
-      const isSameClass = userClass.includes(pageClass) || userClass.includes(pageClass.replace('-', ''));
-      if (!isSameClass) {
-        alert('Akses Ditolak: Anda adalah Bendahara Kelas ' + currentUser.kelas + ', tidak bisa mengubah Kas ' + kelasConfig.className);
-        return;
-      }
-
-      const tipe = document.querySelector('input[name="kasTipe"]:checked').value;
-      const jumlah = Number(document.getElementById('kasJumlah').value.replace(/\./g, ''));
-      if (!jumlah || jumlah <= 0) { toast('Nominal tidak valid.', 'error'); return; }
-      const keterangan = document.getElementById('kasKeterangan').value.trim();
-      if (!keterangan) { toast('Keterangan wajib diisi.', 'error'); return; }
-      const ok = await addKasTransaction(tipe, jumlah, keterangan);
-      if (ok) { document.getElementById('kasForm').reset(); }
-    });
+    const kasFormEl = document.getElementById('kasForm');
+    if (kasFormEl) {
+      kasFormEl._kasHandler = async (e) => {
+        e.preventDefault();
+        const tipe = document.querySelector('input[name="kasTipe"]:checked').value;
+        const jumlah = Number(document.getElementById('kasJumlah').value.replace(/\./g, ''));
+        if (!jumlah || jumlah <= 0) { toast('Nominal tidak valid.', 'error'); return; }
+        const keterangan = document.getElementById('kasKeterangan').value.trim();
+        if (!keterangan) { toast('Keterangan wajib diisi.', 'error'); return; }
+        const ok = await addKasTransaction(tipe, jumlah, keterangan);
+        if (ok) { document.getElementById('kasForm').reset(); }
+      };
+    }
 
     // ===== Auth State Change Listener =====
     onAuthStateChange(function(event, session) {
@@ -1458,9 +1540,12 @@ document.getElementById('addPiketBtn').addEventListener('click', () => openPiket
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
       logoutBtn.addEventListener('click', () => {
-        clearStoredUser();
-        try { if (typeof supabase !== 'undefined' && supabase.auth) supabase.auth.signOut(); } catch (e) {}
-        window.location.reload();
+        showLogoutModal(function() {
+          clearStoredUser();
+          try { if (typeof supabase !== 'undefined' && supabase.auth) supabase.auth.signOut(); } catch (e) {}
+          if (typeof applyAuthUI === 'function') applyAuthUI();
+          window.location.href = 'index.html';
+        });
       });
     }
 

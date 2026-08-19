@@ -59,8 +59,8 @@
       <div class="flex flex-col sm:flex-row items-center gap-6">
         <div class="relative">
           <div class="relative inline-block">
-            <img id="profileFoto" src="https://ui-avatars.com/api/?name=User&background=random" alt="Foto Profil"
-                 class="w-24 h-24 rounded-full object-cover border-2 border-slate-200" />
+             <img id="profileFoto" src="https://ui-avatars.com/api/?name=User&background=random" alt="Foto Profil"
+                  class="w-24 h-24 rounded-full object-cover border-2 border-slate-200 cursor-pointer" />
             <span id="roleBadge" class="absolute -bottom-1 -right-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">Siswa</span>
           </div>
           <div id="noteBubble" class="absolute -top-3 -right-2 whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white text-slate-600 border border-slate-200 cursor-pointer hover:bg-slate-50 transition z-10">
@@ -144,7 +144,7 @@
             <tr class="text-left text-slate-500 border-b border-slate-200">
               <th class="py-3 pr-4 whitespace-nowrap">Tanggal</th>
               <th class="py-3 pr-4 whitespace-nowrap">Keterangan</th>
-              <th class="py-3 whitespace-nowrap">Status ACC</th>
+              <th class="py-3 whitespace-nowrap">Status</th>
             </tr>
           </thead>
 <tbody id="absensiBody">
@@ -226,6 +226,12 @@
           <label class="block text-sm font-medium text-slate-700 mb-1.5">Foto Profil (maks 3MB)</label>
           <input type="file" id="editFoto" accept="image/*" class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 outline-none focus:border-blue-500 transition text-sm" onchange="bukaModalPotong(event)" />
         </div>
+        <div id="hapusFotoWrapper" class="hidden">
+          <button type="button" id="btnHapusFoto" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-rose-50 text-rose-600 text-sm font-semibold hover:bg-rose-100 transition">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+            Hapus Foto
+          </button>
+        </div>
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1.5">Bio</label>
           <textarea id="editBio" rows="3" placeholder="Tulis bio..." class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 outline-none focus:border-blue-500 transition text-sm resize-none"></textarea>
@@ -276,6 +282,23 @@
       </form>
     </div>
   </div>
+
+  <!-- ===== IMAGE PREVIEW LIGHTBOX MODAL ===== -->
+  <div id="imagePreviewModal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" id="previewBackdrop"></div>
+    <button id="closePreviewBtn" class="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/40 hover:bg-black/60 text-white transition -webkit-tap-highlight-color: transparent" style="touch-action: manipulation;">
+      <i data-lucide="x" class="w-6 h-6"></i>
+    </button>
+    <img id="previewImage" src="" alt="Preview" class="relative max-w-[90vw] max-h-[85vh] object-contain rounded-2xl shadow-2xl" />
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="mt-10 border-t border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <!-- Footer note -->
+      <p class="text-center text-xs text-slate-400">&copy; 2026 · FourtyoneSide | Website Angkatan 41</p>
+    </div>
+  </footer>
 
   <script src="supabase-config.js?v=2.0"></script>
   

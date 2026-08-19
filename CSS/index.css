@@ -110,3 +110,23 @@
         background-size: cover !important;
         min-height: 100vh !important;
     }
+
+    /* ===== IMAGE PREVIEW LIGHTBOX ===== */
+    #imagePreviewModal {
+      opacity: 0;
+      transform: scale(0.95);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+    }
+    #imagePreviewModal.is-open {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+    #previewImage {
+      animation: lightboxZoomIn 0.3s ease forwards;
+    }
+    @keyframes lightboxZoomIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }

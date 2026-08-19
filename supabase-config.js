@@ -159,3 +159,105 @@ function toast(msg, type = 'success') {
   setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(-10px)'; }, 2500);
   setTimeout(() => el.remove(), 3000);
 }
+
+// ============================================================
+// LOGOUT CONFIRMATION MODAL
+// ============================================================
+function showLogoutModal(onConfirm) {
+  if (typeof onConfirm !== 'function') onConfirm = function() {};
+
+  const modalId = 'logoutConfirmModal';
+  if (document.getElementById(modalId)) return;
+
+  const overlay = document.createElement('div');
+  overlay.id = modalId;
+  overlay.className = 'fixed inset-0 z-[9999] flex items-center justify-center p-4';
+  overlay.innerHTML = `
+    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" data-close></div>
+    <div class="relative card rounded-2xl p-6 sm:p-8 w-full max-w-sm shadow-2xl">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+          <i data-lucide="log-out" class="w-5 h-5"></i>
+        </div>
+        <h3 class="text-lg font-bold text-slate-800">Konfirmasi Log Out</h3>
+      </div>
+      <p class="text-sm text-slate-600 mb-6">Apakah kamu yakin ingin keluar dari akun ini?</p>
+      <div class="flex gap-3">
+        <button data-close class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold hover:bg-slate-50 transition">Batal</button>
+        <button id="confirmLogoutBtn" class="flex-1 px-4 py-2.5 rounded-xl bg-rose-600 text-white font-semibold hover:bg-rose-700 transition">Ya, Keluar</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+  if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+
+  const close = () => overlay.remove();
+
+  overlay.addEventListener('click', function(e) {
+    if (e.target.hasAttribute('data-close') || e.target === overlay) close();
+  });
+
+  document.addEventListener('keydown', function escHandler(e) {
+    if (e.key === 'Escape') {
+      close();
+      document.removeEventListener('keydown', escHandler);
+    }
+  });
+
+  document.getElementById('confirmLogoutBtn').addEventListener('click', function() {
+    close();
+    onConfirm();
+  });
+}
+
+// ============================================================
+// DELETE CONFIRMATION MODAL
+// ============================================================
+function showDeleteConfirmModal(onConfirm) {
+  if (typeof onConfirm !== 'function') onConfirm = function() {};
+
+  const modalId = 'deleteConfirmModal';
+  if (document.getElementById(modalId)) return;
+
+  const overlay = document.createElement('div');
+  overlay.id = modalId;
+  overlay.className = 'fixed inset-0 z-[9999] flex items-center justify-center p-4';
+  overlay.innerHTML = `
+    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" data-close></div>
+    <div class="relative card rounded-2xl p-6 sm:p-8 w-full max-w-sm shadow-2xl">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+          <i data-lucide="trash-2" class="w-5 h-5"></i>
+        </div>
+        <h3 class="text-lg font-bold text-slate-800">Hapus Tugas</h3>
+      </div>
+      <p class="text-sm text-slate-600 mb-6">Apakah kamu yakin ingin menghapus tugas ini? Tindakan ini tidak dapat dibatalkan.</p>
+      <div class="flex gap-3">
+        <button data-close class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold hover:bg-slate-50 transition">Batal</button>
+        <button id="confirmDeleteBtn" class="flex-1 px-4 py-2.5 rounded-xl bg-rose-600 text-white font-semibold hover:bg-rose-700 transition">Ya, Hapus</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+  if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+
+  const close = () => overlay.remove();
+
+  overlay.addEventListener('click', function(e) {
+    if (e.target.hasAttribute('data-close') || e.target === overlay) close();
+  });
+
+  document.addEventListener('keydown', function escHandler(e) {
+    if (e.key === 'Escape') {
+      close();
+      document.removeEventListener('keydown', escHandler);
+    }
+  });
+
+  document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+    close();
+    onConfirm();
+  });
+}

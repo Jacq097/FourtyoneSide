@@ -78,11 +78,14 @@ if (user) {
       // Logout handler
       if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
-          clearStoredUser();
-          try {
-            if (typeof supabase !== 'undefined' && supabase.auth) supabase.auth.signOut();
-          } catch (e) {}
-          window.location.reload();
+          showLogoutModal(function() {
+            clearStoredUser();
+            try {
+              if (typeof supabase !== 'undefined' && supabase.auth) supabase.auth.signOut();
+            } catch (e) {}
+            if (typeof applyAuthUI === 'function') applyAuthUI();
+            window.location.href = 'index.html';
+          });
         });
       }
     }
@@ -94,11 +97,14 @@ if (user) {
 
     // ===== Gallery Upload Auth Guard =====
     async function updateUploadButtonState() {
-      const { data: { session } } = await supabase.auth.getSession();
       const btn = document.getElementById('adminUploadBtn');
       if (!btn) return;
 
-      if (session) {
+      const { data: { session } } = await supabase.auth.getSession();
+      const storedUser = readStoredUser();
+      const isLoggedIn = session || storedUser;
+
+      if (isLoggedIn) {
         btn.classList.remove('upload-disabled');
         btn.removeAttribute('disabled');
         btn.title = 'Upload Foto';
@@ -227,7 +233,7 @@ if (user) {
       grid.innerHTML = galleryData.map((item, i) => `
         <div class="card rounded-2xl overflow-hidden mb-5 break-inside-avoid reveal">
           <div class="relative">
-            <img src="${item.src}" alt="${item.caption}" class="w-full object-cover hover:scale-105 transition duration-500" />
+             <img src="${item.src}" alt="${item.caption}" class="w-full object-cover hover:scale-105 transition duration-500 previewable-img cursor-pointer" />
             <span class="absolute top-3 right-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white text-[11px] font-semibold text-slate-700 border border-slate-200">
               <i data-lucide="calendar" class="w-3 h-3"></i>
               ${formatDate(item.date)}
@@ -288,12 +294,13 @@ if (user) {
       updateStats();
     }
 
-    function isNoteActive(noteCreatedAt) {
-      if (!noteCreatedAt) return false;
+    function isNoteActive(note, noteCreatedAt) {
+      if (!note || !noteCreatedAt) return false;
       try {
-        const d = safeDate(noteCreatedAt);
-        if (!d || isNaN(d.getTime())) return false;
-        return (Date.now() - d.getTime()) < 24 * 60 * 60 * 1000;
+        const noteTime = new Date(noteCreatedAt).getTime();
+        const now = new Date().getTime();
+        const hoursDifference = (now - noteTime) / (1000 * 60 * 60);
+        return hoursDifference < 24;
       } catch (e) {
         return false;
       }
@@ -435,13 +442,13 @@ if (user) {
       e.preventDefault();
 
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      var storedUser = (typeof readStoredUser === 'function' ? readStoredUser() : null)
+                       || JSON.parse(safeStorageGet(window.localStorage, 'currentUser') || safeStorageGet(window.localStorage, 'user') || '{}');
+      const isLoggedIn = session || (storedUser && storedUser.id);
+      if (!isLoggedIn) {
         alert('Kamu harus login terlebih dahulu untuk mengunggah foto ke galeri!');
         return;
       }
-
-      var storedUser = (typeof readStoredUser === 'function' ? readStoredUser() : null)
-                           || JSON.parse(safeStorageGet(window.localStorage, 'currentUser') || safeStorageGet(window.localStorage, 'user') || '{}');
       const caption = document.getElementById('photoCaption').value;
       const date = document.getElementById('photoDate').value;
       const file = fotoInput.files[0];
@@ -489,4 +496,67 @@ if (user) {
       closeModalFn();
       e.target.reset();
       alert('Foto berhasil ditambahkan ke galeri!');
+    });
+
+    // ===== Image Preview Lightbox =====
+    const previewModal = document.getElementById('imagePreviewModal');
+    const previewImage = document.getElementById('previewImage');
+    const closePreviewBtn = document.getElementById('closePreviewBtn');
+    const previewBackdrop = document.getElementById('previewBackdrop');
+
+    function openPreview(src) {
+      if (!src) return;
+      previewImage.src = src;
+      previewModal.classList.remove('hidden');
+      previewModal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+      void previewModal.offsetWidth;
+      previewModal.classList.add('is-open');
+    }
+
+    function closePreview() {
+      previewModal.classList.remove('is-open');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        previewModal.classList.add('hidden');
+        previewModal.classList.remove('flex');
+        previewImage.src = '';
+      }, 300);
+    }
+
+    closePreviewBtn.addEventListener('click', closePreview);
+    previewBackdrop.addEventListener('click', closePreview);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !previewModal.classList.contains('hidden')) {
+        closePreview();
+      }
+    });
+
+    // Hero image click
+    const heroImg = document.querySelector('#beranda .previewable-img');
+    if (heroImg) {
+      heroImg.addEventListener('click', () => openPreview(heroImg.src));
+    }
+
+    // Gallery images (event delegation because images are rendered dynamically)
+    const galleryGrid = document.getElementById('galleryGrid');
+    if (galleryGrid) {
+      galleryGrid.addEventListener('click', (e) => {
+        const img = e.target.closest('.previewable-img');
+        if (img) openPreview(img.src);
+      });
+    }
+
+    // ===== NOTES AUTO-EXPIRE REFRESH =====
+    // Refresh data siswa secara periodik agar note bubble yang kadaluarsa
+    // otomatis hilang dari card siswa meskipun halaman dibiarkan terbuka.
+    setInterval(function() {
+      fetchStudents();
+    }, 5 * 60 * 1000);
+
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'visible') {
+        fetchStudents();
+      }
     });
