@@ -1,0 +1,330 @@
+:root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --border: #e2e8f0;
+      --blue-600: #2563eb;
+      --blue-700: #1d4ed8;
+      --blue-800: #1e40af;
+      --blue-50: #eff6ff;
+      --shadow-sm: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+    }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-flat {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: none;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      background: var(--blue-600);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.875rem;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-primary:hover { background: var(--blue-700); }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--blue-800);
+      font-weight: 600;
+      font-size: 0.875rem;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-outline:hover { background: var(--blue-50); }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+
+    .toggle-track { transition: background 0.3s; }
+    .toggle-thumb { transition: transform 0.3s; }
+    .toggle.on .toggle-track { background: var(--blue-600); }
+    .toggle.on .toggle-thumb { transform: translateX(1.5rem); }
+
+    .editable { cursor: pointer; }
+    .edit-mode .editable:hover { outline: 2px dashed #f59e0b; outline-offset: 2px; background: rgba(245,158,11,0.08); }
+
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .custom-scrollbar { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .table-header {
+      background: var(--blue-50);
+    }
+    .table-header th {
+      color: var(--blue-800);
+      font-weight: 600;
+    }
+
+    @media (max-width: 640px) {
+      #userName { display: none; }
+      #userChip { padding: 0.5rem; }
+      #userChip img { width: 2rem; height: 2rem; }
+      #loginBtn { padding-left: 0.75rem; padding-right: 0.75rem; font-size: 0.8rem; }
+    }
+
+    .upload-disabled {
+      opacity: 0.5 !important;
+      pointer-events: none !important;
+      cursor: not-allowed !important;
+      filter: grayscale(0.4);
+    }
+
+    .day-tab, .schedule-tab-btn, .day-filter-btn, .hjday-btn {
+      background-color: #ffffff !important;
+      color: #334155 !important;
+      border: 1px solid #e2e8f0 !important;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      flex-shrink: 0 !important;
+    }
+    .day-tab:hover, .schedule-tab-btn:hover, .day-filter-btn:hover, .hjday-btn:hover {
+      background-color: #f1f5f9 !important;
+      color: #1e293b !important;
+    }
+    .day-tab.active, .schedule-tab-btn.active, .day-filter-btn.active, .hjday-btn.active {
+      background-color: #2563eb !important;
+      color: #ffffff !important;
+      border-color: #2563eb !important;
+      font-weight: 600;
+    }
+
+    /* 1. KHUSUS JADWAL PELAJARAN (Memiliki Scrollbar) */
+    .jadwal-scroll {
+      height: 320px !important;
+      max-height: 360px !important;
+      overflow-y: scroll !important;
+      -webkit-overflow-scrolling: touch !important;
+      min-height: 0 !important;
+      overflow-x: hidden !important;
+      padding-right: 4px;
+    }
+
+   /* 2. KHUSUS JADWAL PIKET (Bebaskan tinggi card luar & isinya) */
+    .card:has(#piketList),
+    .card:has(#piketContainer),
+    div[id*="piket"],
+    div[id*="Piket"] {
+      max-height: none !important;
+      min-height: fit-content !important;
+      overflow: visible !important;
+    }
+
+    /* Beri jarak aman di bawah list piket supaya gak mepet garis bawah */
+    #piketList, 
+    #piketContainer {
+      padding-bottom: 1rem !important;
+      height: auto !important;
+    }
+
+    /* 3. KHUSUS TOMBOL RIWAYAT KAS (Agar Tidak Gepeng) */
+    [onclick*="riwayat"],
+    .btn-kas {
+      min-height: 42px !important;
+      flex-shrink: 0 !important;
+    }
+
+    /* =========================================================
+       ISOLASI MODAL RIWAYAT KAS — override selector berbahaya
+       ========================================================= */
+
+    /* 1. Pastikan modal TERSEMBUNYI jika .hidden ada */
+    #kasRiwayatModal.hidden {
+      display: none !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    /* 2. Hanya tampil sebagai flex ketika .hidden DICABUT */
+    #kasRiwayatModal:not(.hidden) {
+      display: flex !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+
+    /* 3. Fallback: paksa default tersembunyi (override div[id*="kas"] dll) */
+    #kasRiwayatModal {
+      display: none !important;
+    }
+
+    /* =========================================================
+       iOS WEBKIT SCROLL FIX — OVERRIDE FLEX COLLAPSE
+       ========================================================= */
+
+    /* Jadwal Pelajaran — bounded scroll area untuk iOS */
+    .jadwal-scroll {
+      height: 320px !important;
+      max-height: 360px !important;
+      overflow-y: scroll !important;
+      -webkit-overflow-scrolling: touch !important;
+      min-height: 0 !important;
+      overflow-x: hidden !important;
+      padding-right: 4px;
+    }
+
+    /* PR List — bounded scroll area (override flex-1 collapse di Safari) */
+    #prList {
+      overflow-y: scroll !important;
+      -webkit-overflow-scrolling: touch !important;
+      max-height: 340px !important;
+      min-height: 0 !important;
+      flex: none !important;
+      height: auto !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      touch-action: pan-y !important;
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+    }
+    #prList::-webkit-scrollbar {
+      width: 3px;
+    }
+    #prList::-webkit-scrollbar-thumb {
+      background: transparent;
+    }
+
+    /* Piket List — bounded scroll area (override flex-1 collapse di Safari) */
+    #piketList {
+      overflow-y: scroll !important;
+      -webkit-overflow-scrolling: touch !important;
+      max-height: 340px !important;
+      min-height: 0 !important;
+      flex: none !important;
+      height: auto !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      touch-action: pan-y !important;
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+    }
+    #piketList::-webkit-scrollbar {
+      width: 3px;
+    }
+    #piketList::-webkit-scrollbar-thumb {
+      background: transparent;
+    }
+
+    /* Card PR — batasi tinggi agar tidak melar */
+    #pr {
+      display: flex !important;
+      flex-direction: column !important;
+      min-height: fit-content !important;
+      flex-shrink: 0 !important;
+      width: 100% !important;
+      overflow: visible !important;
+      height: 380px !important;
+    }
+
+    /* Card Piket — batasi tinggi agar tidak melar */
+    #piket {
+      display: flex !important;
+      flex-direction: column !important;
+      min-height: fit-content !important;
+      flex-shrink: 0 !important;
+      width: 100% !important;
+      overflow: visible !important;
+      height: 380px !important;
+    }
+
+    /* Card Kas — biarkan auto mengikuti isi form */
+    #kas {
+      display: flex !important;
+      flex-direction: column !important;
+      min-height: fit-content !important;
+      flex-shrink: 0 !important;
+      width: 100% !important;
+      overflow: visible !important;
+      height: auto !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    /* Scroll wrapper di dalam Kas — jangan paksa scroll, biarkan form mengExpand */
+    #kas div.overflow-y-auto {
+      overflow-y: visible !important;
+      -webkit-overflow-scrolling: auto !important;
+      max-height: none !important;
+      min-height: 0 !important;
+      height: auto !important;
+      flex: none !important;
+    }
+
+    /* Form Kas — pastikan input tampil penuh */
+    #kasForm {
+      display: block !important;
+      min-height: fit-content !important;
+      flex-shrink: 0 !important;
+      width: 100% !important;
+      overflow: visible !important;
+      height: auto !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    /* Parent card umum — jangan potong scrollbar child */
+    .card {
+      overflow: visible !important;
+    }
+
+    /* Input & button targets iOS — minimal 44px agar tidak di-nuke browser */
+    #kas input,
+    #kas select,
+    #kas button,
+    #pr input,
+    #pr select,
+    #pr button,
+    #piket input,
+    #piket select,
+    #piket button {
+      min-height: 44px !important;
+    }
+
+    html {
+      min-height: 100%;
+    }
+    body {
+      background: radial-gradient(circle at 50% 30%, #ffffff 0%, #f4f0ff 35%, #e0f2fe 75%, #eef2ff 100%) !important;
+      background-attachment: fixed !important;
+      background-size: cover !important;
+      min-height: 100vh !important;
+    }
