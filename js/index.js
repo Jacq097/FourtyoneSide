@@ -69,7 +69,9 @@
         if (loginBtn) loginBtn.style.display = 'none';
         if (userChip) { userChip.classList.remove('hidden'); userChip.classList.add('flex'); }
         if (profileName) profileName.textContent = user.nama_lengkap || user.nama || user.username || 'User';
-        if (logoutBtn) logoutBtn.classList.replace('hidden', 'md:inline-flex');
+        if (logoutBtn) {
+          logoutBtn.className = 'hidden md:inline-flex p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition text-slate-600';
+        }
         if (mobileLoginBtn) mobileLoginBtn.classList.add('hidden');
         if (mobileProfilBtn) mobileProfilBtn.classList.remove('hidden');
         if (mobileLogoutBtn) {
@@ -86,7 +88,9 @@
       } else {
         if (loginBtn) loginBtn.style.display = '';
         if (userChip) { userChip.classList.add('hidden'); userChip.classList.remove('flex'); }
-        if (logoutBtn) logoutBtn.classList.replace('md:inline-flex', 'hidden');
+        if (logoutBtn) {
+          logoutBtn.className = 'hidden md:inline-flex p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition text-slate-600';
+        }
         if (mobileLoginBtn) mobileLoginBtn.classList.remove('hidden');
         if (mobileProfilBtn) mobileProfilBtn.classList.add('hidden');
         if (mobileLogoutBtn) mobileLogoutBtn.classList.add('hidden');
