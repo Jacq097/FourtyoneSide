@@ -89,7 +89,7 @@
         if (loginBtn) loginBtn.style.display = '';
         if (userChip) { userChip.classList.add('hidden'); userChip.classList.remove('flex'); }
         if (logoutBtn) {
-          logoutBtn.className = 'hidden md:inline-flex p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition text-slate-600';
+          logoutBtn.className = 'hidden p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition text-slate-600';
         }
         if (mobileLoginBtn) mobileLoginBtn.classList.remove('hidden');
         if (mobileProfilBtn) mobileProfilBtn.classList.add('hidden');
