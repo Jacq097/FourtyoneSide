@@ -371,7 +371,7 @@
         const badgeClass = s.kelas && s.kelas.trim().toUpperCase() === 'IX-A'
           ? 'bg-blue-50 text-blue-700 border border-blue-200'
           : 'bg-blue-50 text-blue-700 border border-blue-200';
-        const noteActive = s.note_text && isNoteActive(s.note_created_at);
+        const noteActive = s.note_text && isNoteActive(s.note_text, s.note_created_at);
         const noteDisplay = noteActive ? (s.note_text.length > 30 ? s.note_text.slice(0, 30) + '...' : s.note_text) : '';
         const noteBubbleClass = noteActive
           ? 'bg-white text-slate-700 border border-slate-200'
@@ -387,7 +387,7 @@
                   <i data-lucide="check" class="w-3 h-3 text-white"></i>
                 </span>` : ''}
               </div>
-              ${noteActive ? `<div class="absolute -top-3 -right-2 whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold ${noteBubbleClass}">
+              ${noteActive ? `<div class="absolute -top-3 -right-2 whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold ${noteBubbleClass} cursor-pointer hover:bg-slate-50 transition z-10">
                 ${noteDisplay}
               </div>` : ''}
             </div>
