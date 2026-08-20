@@ -828,6 +828,12 @@ tailwind.config = {
     const mobileMenu = document.getElementById('mobileMenu');
     mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
 
+    document.addEventListener('click', (e) => {
+      if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target) && !mobileMenu.classList.contains('hidden')) {
+        mobileMenu.classList.add('hidden');
+      }
+    });
+
     // ===== REVEAL =====
     const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('active'); revealObserver.unobserve(e.target); } });
@@ -1496,17 +1502,39 @@ document.getElementById('addPiketBtn').addEventListener('click', () => openPiket
       const userChip = document.getElementById('userChip');
       const userName = document.getElementById('userName');
       const logoutBtn = document.getElementById('logoutBtn');
+      const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+      const mobileProfilBtn = document.getElementById('mobileProfilBtn');
+      const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
       const user = readStoredUser() || currentUser;
 
       if (user) {
         if (loginBtn) { loginBtn.classList.add('hidden'); loginBtn.style.display = 'none'; }
         if (userChip) { userChip.classList.remove('hidden'); userChip.classList.add('flex'); }
         if (userName) userName.textContent = user.nama_lengkap || user.nama || user.username || 'User';
-        if (logoutBtn) logoutBtn.classList.remove('hidden');
+        if (logoutBtn) logoutBtn.classList.replace('hidden', 'md:inline-flex');
+        if (mobileLoginBtn) mobileLoginBtn.classList.add('hidden');
+        if (mobileProfilBtn) mobileProfilBtn.classList.remove('hidden');
+      if (mobileLogoutBtn) {
+        mobileLogoutBtn.classList.remove('hidden');
+        if (!mobileLogoutBtn._logoutHandlerAttached) {
+          mobileLogoutBtn._logoutHandlerAttached = true;
+          mobileLogoutBtn.onclick = function() {
+            showLogoutModal(function() {
+              clearStoredUser();
+              try { if (typeof supabase !== 'undefined' && supabase.auth) supabase.auth.signOut(); } catch (e) {}
+              if (typeof applyAuthUI === 'function') applyAuthUI();
+              window.location.href = 'index.html';
+            });
+          };
+        }
+      }
       } else {
         if (loginBtn) { loginBtn.classList.remove('hidden'); loginBtn.style.display = ''; }
         if (userChip) { userChip.classList.add('hidden'); userChip.classList.remove('flex'); }
-        if (logoutBtn) logoutBtn.classList.add('hidden');
+        if (logoutBtn) logoutBtn.classList.replace('md:inline-flex', 'hidden');
+        if (mobileLoginBtn) mobileLoginBtn.classList.remove('hidden');
+        if (mobileProfilBtn) mobileProfilBtn.classList.add('hidden');
+        if (mobileLogoutBtn) mobileLogoutBtn.classList.add('hidden');
       }
     }
 
@@ -1539,12 +1567,12 @@ document.getElementById('addPiketBtn').addEventListener('click', () => openPiket
     }
 
     const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
+    if (logoutBtn && !logoutBtn._logoutHandlerAttached) {
+      logoutBtn._logoutHandlerAttached = true;
       logoutBtn.addEventListener('click', () => {
         showLogoutModal(function() {
           clearStoredUser();
           try { if (typeof supabase !== 'undefined' && supabase.auth) supabase.auth.signOut(); } catch (e) {}
-          if (typeof applyAuthUI === 'function') applyAuthUI();
           window.location.href = 'index.html';
         });
       });

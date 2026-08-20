@@ -59,17 +59,10 @@
         </a>
 
         <!-- Logged in: Profile button -->
-        <div id="profileArea" class="hidden relative">
-          <div class="flex items-center gap-2">
-            <a href="profil.html" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition">
-              <img id="headerAvatarImg" src="https://ui-avatars.com/api/?name=User&background=random" alt="Avatar" class="w-7 h-7 rounded-full object-cover" />
-              <span id="profileName" class="text-sm font-semibold max-w-[120px] truncate text-slate-700">User</span>
-            </a>
-            <button id="logoutBtn" title="Logout" class="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition text-slate-600">
-              <i data-lucide="log-out" class="w-4 h-4"></i>
-            </button>
-          </div>
-         </div>
+        <a href="profil.html" id="userChip" class="hidden items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition">
+          <img id="headerAvatarImg" src="https://ui-avatars.com/api/?name=User&background=random" alt="Avatar" class="w-7 h-7 rounded-full object-cover" />
+          <span id="profileName" class="text-sm font-semibold max-w-[120px] truncate text-slate-700">User</span>
+        </a>
 
           <!-- Mobile menu toggle -->
          <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition">
@@ -80,15 +73,17 @@
 
     <!-- Mobile Menu -->
     <div id="mobileMenu" class="lg:hidden hidden bg-white border-b border-slate-200">
-      <div class="px-4 py-4 flex flex-col gap-3 text-sm font-medium text-slate-600">
-        <a href="#beranda" class="px-3 py-2 rounded-lg hover:bg-slate-50 transition">Beranda</a>
-        <a href="#kelas" class="px-3 py-2 rounded-lg hover:bg-slate-50 transition">Kelas</a>
-        <a href="#galeri" class="px-3 py-2 rounded-lg hover:bg-slate-50 transition">Galeri</a>
-        <a href="#siswa" class="px-3 py-2 rounded-lg hover:bg-slate-50 transition">Siswa</a>
-<a href="login.html" class="mt-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg btn-primary text-sm font-semibold">
-          <i data-lucide="log-in" class="w-4 h-4"></i>
-          Login
-        </a>
+      <div class="p-4 flex flex-col space-y-1 text-sm font-medium text-slate-600">
+        <a href="#beranda" class="text-gray-700 hover:text-blue-600 font-medium py-2 px-3 rounded-lg hover:bg-gray-50 block transition">Beranda</a>
+        <a href="#kelas" class="text-gray-700 hover:text-blue-600 font-medium py-2 px-3 rounded-lg hover:bg-gray-50 block transition">Kelas</a>
+        <a href="#galeri" class="text-gray-700 hover:text-blue-600 font-medium py-2 px-3 rounded-lg hover:bg-gray-50 block transition">Galeri</a>
+        <a href="#siswa" class="text-gray-700 hover:text-blue-600 font-medium py-2 px-3 rounded-lg hover:bg-gray-50 block transition">Siswa</a>
+        <hr class="my-3 border-gray-100">
+        <div id="mobileAuthLinks">
+          <a href="login.html" id="mobileLoginBtn" class="bg-blue-600 text-white font-semibold py-2.5 px-4 rounded-xl w-full text-center block shadow-sm hover:bg-blue-700 transition">Login</a>
+          <a href="profil.html" id="mobileProfilBtn" class="hidden bg-white border border-slate-200 text-slate-700 font-semibold py-2.5 px-4 rounded-xl w-full text-center block hover:bg-slate-50 transition mt-2">Profil Saya</a>
+          <button id="mobileLogoutBtn" class="hidden bg-red-50 text-red-600 font-semibold py-2.5 px-4 rounded-xl w-full text-center block hover:bg-red-100 transition mt-2">Logout</button>
+        </div>
       </div>
     </div>
   </header>
@@ -110,14 +105,21 @@
           "Melangkah Bersama, Membangun Kenangan." Satu angkatan, dua kelas, seribu cerita.
           Website ini menjadi tempat dan kenangan murid murid angkatan ke-41 SMPHI.
         </p>
-        <div class="mt-8 flex flex-wrap gap-4">
-          <a href="#kelas" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl btn-primary font-semibold">
+        <div class="mt-8 flex flex-row items-center gap-2 sm:gap-3 overflow-x-auto w-full">
+          <a href="#kelas" class="inline-flex items-center gap-2 px-3 py-2.5 text-sm sm:px-5 sm:py-3 sm:text-base rounded-xl btn-primary font-semibold whitespace-nowrap">
             <i data-lucide="compass" class="w-5 h-5"></i>
             Jelajahi Kelas
           </a>
-          <a href="#galeri" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl btn-outline font-semibold text-slate-700">
-            <i data-lucide="camera" class="w-5 h-5"></i>
+          <a href="#galeri" class="inline-flex items-center gap-2 px-3 py-2.5 text-sm sm:px-5 sm:py-3 sm:text-base rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-sm transition duration-200 whitespace-nowrap">
+            <i data-lucide="camera" class="w-5 h-5 text-white"></i>
             Lihat Galeri
+          </a>
+          <a href="https://www.instagram.com/fourtyoneside?igsh=NWppOW1jb2M5ejdl&igsi=NWppOW1jb2M5ejdl" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center p-2.5 sm:p-3 aspect-square md:p-0 md:w-12 md:h-12 flex-shrink-0 rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition duration-200" title="Instagram Angkatan 41">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <circle cx="12" cy="12" r="4"></circle>
+              <circle cx="17.5" cy="6.5" r="1.5" fill="white" stroke="none"></circle>
+            </svg>
           </a>
         </div>
         <!-- Stats -->
@@ -288,7 +290,7 @@
            <span class="block text-[11px] text-slate-500">Together We Rise</span>
          </div>
        </div>
-       <p class="text-center text-xs text-slate-400">&copy; 2026 · FourtyoneSide | Website Angkatan 41</p>
+       <p class="text-center text-xs text-slate-400">&copy; 2026 · FourtyOneside | Website Angkatan 41</p>
        <div class="hidden md:block"></div>
      </div>
    </footer>

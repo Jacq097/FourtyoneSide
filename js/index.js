@@ -56,27 +56,45 @@
 
     function applyAuthUI() {
       const loginBtn = document.getElementById('loginBtn');
-      const profileArea = document.getElementById('profileArea');
+      const userChip = document.getElementById('userChip');
       const profileName = document.getElementById('profileName');
       const logoutBtn = document.getElementById('logoutBtn');
+      const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+      const mobileProfilBtn = document.getElementById('mobileProfilBtn');
+      const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
 
       const user = readStoredUser();
 
-if (user) {
-        // Logged in: hide Login, show Profile button
-        // Use inline style.display (wins over Tailwind classes at all breakpoints)
+      if (user) {
         if (loginBtn) loginBtn.style.display = 'none';
-        if (profileArea) profileArea.style.display = 'flex';
-        // Nama diambil dari nama_lengkap, lalu fallback ke nama/username
+        if (userChip) { userChip.classList.remove('hidden'); userChip.classList.add('flex'); }
         if (profileName) profileName.textContent = user.nama_lengkap || user.nama || user.username || 'User';
+        if (logoutBtn) logoutBtn.classList.replace('hidden', 'md:inline-flex');
+        if (mobileLoginBtn) mobileLoginBtn.classList.add('hidden');
+        if (mobileProfilBtn) mobileProfilBtn.classList.remove('hidden');
+        if (mobileLogoutBtn) {
+          mobileLogoutBtn.classList.remove('hidden');
+          mobileLogoutBtn.onclick = function() {
+            showLogoutModal(function() {
+              clearStoredUser();
+              try { if (typeof supabase !== 'undefined' && supabase.auth) supabase.auth.signOut(); } catch (e) {}
+              if (typeof applyAuthUI === 'function') applyAuthUI();
+              window.location.href = 'index.html';
+            });
+          };
+        }
       } else {
-        // Not logged in: show Login, hide profile
-        if (loginBtn) loginBtn.style.display = '';  // fall back to CSS classes
-        if (profileArea) profileArea.style.display = 'none';
+        if (loginBtn) loginBtn.style.display = '';
+        if (userChip) { userChip.classList.add('hidden'); userChip.classList.remove('flex'); }
+        if (logoutBtn) logoutBtn.classList.replace('md:inline-flex', 'hidden');
+        if (mobileLoginBtn) mobileLoginBtn.classList.remove('hidden');
+        if (mobileProfilBtn) mobileProfilBtn.classList.add('hidden');
+        if (mobileLogoutBtn) mobileLogoutBtn.classList.add('hidden');
       }
 
-      // Logout handler
-      if (logoutBtn) {
+      // Desktop logout handler
+      if (logoutBtn && !logoutBtn._logoutHandlerAttached) {
+        logoutBtn._logoutHandlerAttached = true;
         logoutBtn.addEventListener('click', () => {
           showLogoutModal(function() {
             clearStoredUser();
@@ -153,6 +171,12 @@ if (user) {
     const mobileMenu = document.getElementById('mobileMenu');
     mobileMenuBtn.addEventListener('click', () => {
       mobileMenu.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target) && !mobileMenu.classList.contains('hidden')) {
+        mobileMenu.classList.add('hidden');
+      }
     });
 
     // ===== Reveal on Scroll =====

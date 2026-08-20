@@ -31,11 +31,13 @@
 <body class="text-slate-800 font-sans antialiased overflow-x-hidden">
 
   <!-- ===== NAVBAR ===== -->
-  <header class="sticky top-0 inset-x-0 z-50 bg-white border-b border-slate-200">
+  <header class="sticky top-0 inset-x-0 z-50 bg-white border-b border-slate-200 relative">
     <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <a href="index.html" class="flex items-center gap-2.5 group">
-        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-900/20 group-hover:scale-105 transition">
-          <i data-lucide="school" class="w-5 h-5 text-white"></i>
+        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-md hover:bg-blue-700 transition duration-200 text-white" title="Kembali ke Beranda">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
         </div>
         <div class="leading-tight">
 <span class="block font-extrabold text-lg tracking-wide"><span id="className">IX-A</span></span>
@@ -53,7 +55,7 @@
 
 <div class="flex items-center gap-3">
 <!-- Login / user -->
-        <a href="login.html" id="loginBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg btn-primary text-sm font-semibold">
+        <a href="login.html" id="loginBtn" class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-lg btn-primary text-sm font-semibold">
           <i data-lucide="log-in" class="w-4 h-4"></i>
           Login Siswa
         </a>
@@ -61,9 +63,6 @@
     <img id="headerAvatarImg" src="https://picsum.photos/seed/user/40/40" class="w-7 h-7 rounded-full object-cover" alt="user" />
     <span id="userName" class="text-sm font-semibold text-slate-700">Ahmad</span>
  </a>
-        <button id="logoutBtn" title="Logout" class="hidden p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition text-slate-600">
-          <i data-lucide="log-out" class="w-4 h-4"></i>
-        </button>
         <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50">
   <i data-lucide="menu" class="w-5 h-5 text-slate-600"></i>
 </button>
@@ -71,13 +70,19 @@
     </nav>
 
     <!-- Mobile menu -->
-    <div id="mobileMenu" class="md:hidden hidden bg-white border-b border-slate-200">
-      <div class="px-4 py-4 flex flex-col gap-3 text-sm font-medium text-slate-600">
-        <a href="index.html" class="px-3 py-2 rounded-lg hover:bg-slate-50">Home</a>
-        <a href="#jadwal" class="px-3 py-2 rounded-lg hover:bg-slate-50">Jadwal</a>
-        <a href="#pr" class="px-3 py-2 rounded-lg hover:bg-slate-50">PR</a>
-        <a href="#piket" class="px-3 py-2 rounded-lg hover:bg-slate-50">Piket</a>
-        <a href="#kas" class="px-3 py-2 rounded-lg hover:bg-slate-50">Kas</a>
+    <div id="mobileMenu" class="md:hidden hidden absolute top-full left-0 right-0 bg-white border-b border-slate-200 z-50">
+      <div class="p-4 flex flex-col space-y-1 text-sm font-medium text-slate-600">
+        <a href="index.html" class="text-gray-700 hover:text-blue-600 font-medium py-2 px-3 rounded-lg hover:bg-gray-50 block transition">Home</a>
+        <a href="#jadwal" class="text-gray-700 hover:text-blue-600 font-medium py-2 px-3 rounded-lg hover:bg-gray-50 block transition">Jadwal</a>
+        <a href="#pr" class="text-gray-700 hover:text-blue-600 font-medium py-2 px-3 rounded-lg hover:bg-gray-50 block transition">PR</a>
+        <a href="#piket" class="text-gray-700 hover:text-blue-600 font-medium py-2 px-3 rounded-lg hover:bg-gray-50 block transition">Piket</a>
+        <a href="#kas" class="text-gray-700 hover:text-blue-600 font-medium py-2 px-3 rounded-lg hover:bg-gray-50 block transition">Kas</a>
+        <hr class="my-3 border-gray-100">
+        <div id="mobileAuthLinks">
+          <a href="login.html" id="mobileLoginBtn" class="bg-blue-600 text-white font-semibold py-2.5 px-4 rounded-xl w-full text-center block shadow-sm hover:bg-blue-700 transition">Login</a>
+          <a href="profil.html" id="mobileProfilBtn" class="hidden bg-white border border-slate-200 text-slate-700 font-semibold py-2.5 px-4 rounded-xl w-full text-center block hover:bg-slate-50 transition mt-2">Profil Saya</a>
+          <button id="mobileLogoutBtn" class="hidden bg-red-50 text-red-600 font-semibold py-2.5 px-4 rounded-xl w-full text-center block hover:bg-red-100 transition mt-2">Logout</button>
+        </div>
       </div>
     </div>
   </header>
@@ -208,7 +213,6 @@
             <i data-lucide="lock" class="w-8 h-8 text-blue-800"></i>
           </div>
           <p class="text-sm text-slate-600">Login sebagai siswa kelas ini untuk melakukan absensi.</p>
-          <span class="text-[11px] text-blue-800">(Siswa lain / publik hanya dapat melihat)</span>
         </div>
 
         <div id="loggedIn" class="hidden text-center py-4">
@@ -229,7 +233,7 @@
         <div id="accPanel" class="hidden mt-4 pt-4 border-t border-slate-200">
           <p class="text-xs text-slate-500 mb-3 flex items-center gap-1.5">
             <i data-lucide="badge-check" class="w-4 h-4 text-blue-500"></i>
-            Panel ACC Absensi (Wali Kelas / Ketua / Wakil)
+            Panel Absensi 
           </p>
           <p class="text-xs text-blue-800 mb-3">Daftar siswa yang sudah absen hari ini:</p>
           <div id="accList" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
@@ -341,7 +345,7 @@
          </div>
  <span class="font-extrabold text-slate-800">Kelas <span id="footClass">IX-A</span> · Angkatan 41</span>
        </div>
-       <p class="text-center text-xs text-slate-400">&copy; 2026 · FourtyoneSide | Website Angkatan 41</p>
+       <p class="text-center text-xs text-slate-400">&copy; 2026 · FourtyOneside | Website Angkatan 41</p>
        <a href="index.html" class="text-sm text-slate-500 hover:text-blue-600 transition inline-flex items-center gap-1.5">
          <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali ke Halaman Utama
        </a>
