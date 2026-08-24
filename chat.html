@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FortyOneside Chat</title>
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50:  '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+            }
+          }
+        },
+      },
+    }
+  </script>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- Supabase JS v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="CSS/chat.css" />
+</head>
+
+<body class="bg-white text-slate-800 font-sans antialiased h-screen overflow-hidden">
+
+  <!-- ═══════════════════════════════════════════════════
+       ROOT LAYOUT: Sidebar + Main (Desktop 2-col / Mobile 1-col)
+  ═══════════════════════════════════════════════════ -->
+  <div class="flex h-screen w-full">
+
+    <!-- ══════════════════════════════════════
+         SIDEBAR (Left Column)
+    ══════════════════════════════════════ -->
+    <aside id="sidebar"
+      class="flex flex-col w-full md:w-[360px] lg:w-[400px] flex-shrink-0 border-r border-slate-200 bg-white h-full overflow-hidden transition-all duration-300">
+
+      <!-- ── Sidebar Header ── -->
+      <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <!-- Logo mark -->
+          <div class="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="graduation-cap" class="w-4 h-4 text-white"></i>
+          </div>
+          <div>
+            <p id="sidebarUsername" class="text-[15px] font-bold text-slate-900 leading-tight">FortyOneside</p>
+            <p class="text-[11px] text-slate-400 font-medium">Direct Messages</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1">
+          <button onclick="openNoteModal()"
+            title="Buat Note baru"
+            class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-blue-600 transition-colors">
+            <i data-lucide="sticky-note" class="w-5 h-5"></i>
+          </button>
+          <button title="Pesan baru"
+            class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-blue-600 transition-colors">
+            <i data-lucide="edit" class="w-5 h-5"></i>
+          </button>
+          <button title="Pengaturan"
+            class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-blue-600 transition-colors">
+            <i data-lucide="settings" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Search Bar ── -->
+      <div class="px-4 py-3">
+        <div class="relative">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Cari pesan..."
+            class="w-full bg-slate-100 rounded-2xl pl-9 pr-4 py-2.5 text-[13px] text-slate-700 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500/30 focus:bg-white border border-transparent focus:border-blue-300 transition" />
+        </div>
+      </div>
+
+      <!-- ── Notes Horizontal Scroll Bar ── -->
+      <div class="px-4 pb-1">
+        <div id="notesScrollContainer"
+          class="flex gap-4 overflow-x-auto no-scrollbar pb-2 pt-1">
+
+          <!-- My Note (static + clickable) -->
+          <div class="flex flex-col items-center gap-1.5 flex-shrink-0 cursor-pointer"
+               onclick="openNoteModal()">
+            <div class="relative">
+              <div class="story-ring w-16 h-16 rounded-full p-[2px] flex items-center justify-center">
+                <div id="myNoteAvatar"
+                  class="w-full h-full rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-lg overflow-hidden">
+                  <span id="myNoteInitial">?</span>
+                </div>
+              </div>
+              <!-- Cloud bubble for my note -->
+              <div id="myNoteBubble" class="note-bubble hidden absolute -top-9 left-1/2 -translate-x-1/2 z-10">
+                <span id="myNoteText" class="text-[10px] font-medium text-slate-800 whitespace-nowrap max-w-[100px] truncate block"></span>
+              </div>
+              <!-- Plus icon overlay (if no note) -->
+              <div id="myNotePlusIcon"
+                class="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-blue-600 border-2 border-white flex items-center justify-center">
+                <i data-lucide="plus" class="w-3 h-3 text-white"></i>
+              </div>
+            </div>
+            <span class="text-[11px] text-slate-500 font-medium">Note kamu</span>
+          </div>
+
+          <!-- Friend Notes (dynamic) -->
+          <div id="friendNotesContainer" class="flex gap-4">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Divider ── -->
+      <div class="mx-4 border-t border-slate-100 mb-1"></div>
+
+      <!-- ── Contact / Conversation List ── -->
+      <div class="flex-1 overflow-y-auto no-scrollbar">
+        <div class="px-2 pt-1 pb-3">
+          <p class="px-3 py-2 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Pesan</p>
+          <div id="contactList">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ══════════════════════════════════════
+         MAIN CHAT AREA (Right Column)
+    ══════════════════════════════════════ -->
+    <main id="mainArea"
+      class="hidden md:flex flex-col flex-1 h-full overflow-hidden bg-white">
+
+      <!-- ── Chat Header ── -->
+      <div id="chatHeader"
+        class="flex items-center justify-between px-5 py-3.5 border-b border-slate-200 bg-white flex-shrink-0">
+
+        <!-- Back button (mobile only) -->
+        <button id="backBtn"
+          onclick="closeChatMobile()"
+          class="md:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 mr-1 transition-colors">
+          <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Contact info -->
+        <div class="flex items-center gap-3 cursor-pointer flex-1" id="chatHeaderInfo">
+          <div class="relative">
+            <div id="chatPartnerAvatar"
+              class="w-10 h-10 rounded-full bg-gradient-to-br from-slate-300 to-slate-500 flex items-center justify-center text-white font-bold text-base overflow-hidden">
+              <span id="chatPartnerInitial">?</span>
+            </div>
+            <span id="chatOnlineDot"
+              class="hidden absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white"></span>
+          </div>
+          <div>
+            <p id="chatPartnerName" class="text-[15px] font-semibold text-slate-900">Pilih percakapan</p>
+            <p id="chatPartnerStatus" class="text-[12px] text-slate-400">Belum ada percakapan dipilih</p>
+          </div>
+        </div>
+
+        <!-- Action icons -->
+        <div class="flex items-center gap-1">
+          <button title="Panggil Suara"
+            class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-blue-600 transition-colors">
+            <i data-lucide="phone" class="w-5 h-5"></i>
+          </button>
+          <button title="Panggil Video"
+            class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-blue-600 transition-colors">
+            <i data-lucide="video" class="w-5 h-5"></i>
+          </button>
+          <button title="Info"
+            class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-blue-600 transition-colors">
+            <i data-lucide="info" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Chat Body (Message Area) ── -->
+      <div id="chatBody"
+        class="flex-1 overflow-y-auto no-scrollbar px-5 py-5 space-y-1"
+        style="background: #fafafa;">
+
+        <!-- Empty state -->
+        <div id="emptyState" class="flex flex-col items-center justify-center h-full gap-4 py-12">
+          <div class="w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center">
+            <i data-lucide="message-circle" class="w-10 h-10 text-blue-400"></i>
+          </div>
+          <div class="text-center">
+            <p class="text-slate-700 font-semibold text-lg">Mulai percakapan</p>
+            <p class="text-slate-400 text-sm mt-1">Pilih kontak atau mulai chat baru</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Chat Footer (Input) ── -->
+      <div id="chatFooter"
+        class="flex items-end gap-2 px-4 py-3 border-t border-slate-200 bg-white flex-shrink-0">
+
+        <!-- Emoji button -->
+        <button title="Emoji"
+          class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-50 transition-colors flex-shrink-0">
+          <i data-lucide="smile" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Image upload -->
+        <label title="Upload Gambar"
+          class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-50 transition-colors flex-shrink-0 cursor-pointer">
+          <i data-lucide="image" class="w-5 h-5"></i>
+          <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageUpload(this)" />
+        </label>
+
+        <!-- Text input -->
+        <div class="flex-1 relative">
+          <textarea
+            id="msgInput"
+            placeholder="Ketik pesan..."
+            rows="1"
+            class="w-full bg-slate-100 rounded-2xl px-4 py-2.5 text-[14px] text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500/30 focus:bg-white border border-transparent focus:border-blue-300 resize-none transition max-h-36 no-scrollbar leading-relaxed"
+            onkeydown="handleMsgKeydown(event)"
+            oninput="autoResizeTextarea(this)"
+          ></textarea>
+        </div>
+
+        <!-- Send button -->
+        <button id="sendBtn"
+          onclick="sendMessage()"
+          title="Kirim"
+          class="w-10 h-10 rounded-xl flex items-center justify-center bg-blue-600 text-white hover:bg-blue-700 active:scale-95 transition-all flex-shrink-0 shadow-sm">
+          <i data-lucide="send" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </main>
+
+    <!-- ── Desktop Empty Right Panel (when no chat selected) ── -->
+    <div id="noChatPanel"
+      class="hidden md:flex flex-1 flex-col items-center justify-center gap-5 bg-slate-50">
+      <div class="w-24 h-24 rounded-full bg-white shadow-md flex items-center justify-center">
+        <i data-lucide="send" class="w-12 h-12 text-blue-500"></i>
+      </div>
+      <div class="text-center">
+        <p class="text-xl font-bold text-slate-800">Pesan Kamu</p>
+        <p class="text-slate-400 text-sm mt-2 max-w-xs">Kirim foto dan pesan ke teman-teman sekelas<br>— dimulai sekarang!</p>
+      </div>
+      <button onclick="openNoteModal()"
+        class="mt-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 transition-colors shadow-sm">
+        Kirim Pesan Pertama
+      </button>
+    </div>
+
+  </div><!-- end root flex -->
+
+
+  <!-- ═══════════════════════════════════════════════════
+       MODAL: New Note (Instagram-style)
+  ═══════════════════════════════════════════════════ -->
+  <div id="noteModal"
+    class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden animate-slide-up">
+
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+        <h2 class="text-[16px] font-bold text-slate-900">Buat Note</h2>
+        <button onclick="closeNoteModal()"
+          class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="px-5 py-5 space-y-4">
+
+        <!-- Note text -->
+        <div>
+          <label class="block text-[12px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Apa yang kamu pikirkan?</label>
+          <textarea
+            id="noteTextInput"
+            placeholder="Tulis note singkat..."
+            maxlength="60"
+            rows="3"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[14px] text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 resize-none transition"
+          ></textarea>
+          <p class="text-right text-[11px] text-slate-400 mt-1"><span id="noteCharCount">0</span>/60</p>
+        </div>
+
+        <!-- Song (optional) -->
+        <div>
+          <label class="block text-[12px] font-semibold text-slate-500 uppercase tracking-wider mb-2">
+            <i data-lucide="music" class="w-3 h-3 inline mr-1"></i>Lagu (opsional)
+          </label>
+          <input
+            id="noteSongInput"
+            type="text"
+            placeholder="Judul lagu yang lagi diputar..."
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-[14px] text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition" />
+        </div>
+
+        <!-- Preview -->
+        <div id="notePreviewWrap" class="hidden">
+          <p class="text-[12px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Preview</p>
+          <div class="flex flex-col items-center gap-2">
+            <div class="note-bubble relative inline-block">
+              <span id="notePreviewText" class="text-[12px] font-medium text-slate-800 block"></span>
+              <span id="notePreviewSong" class="hidden text-[11px] text-blue-500 font-medium mt-0.5 block"></span>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-lg">
+              <span id="notePreviewInitial">?</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-5 pb-5 flex gap-3">
+        <button onclick="closeNoteModal()"
+          class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-[14px] font-semibold hover:bg-slate-50 transition-colors">
+          Batal
+        </button>
+        <button id="saveNoteBtn" onclick="saveNote()"
+          class="flex-1 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-[14px] font-semibold hover:bg-blue-700 transition-colors shadow-sm">
+          Bagikan Note
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       MODAL: Image Preview (before send)
+  ═══════════════════════════════════════════════════ -->
+  <div id="imgPreviewModal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+    <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+        <h2 class="text-[15px] font-bold text-slate-900">Kirim Gambar</h2>
+        <button onclick="closeImgPreview()"
+          class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="p-5">
+        <img id="imgPreviewEl" src="" alt="Preview" class="w-full rounded-xl object-contain max-h-64" />
+        <input
+          id="imgCaptionInput"
+          type="text"
+          placeholder="Tambah keterangan (opsional)..."
+          class="w-full mt-4 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-[14px] text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition" />
+      </div>
+      <div class="px-5 pb-5 flex gap-3">
+        <button onclick="closeImgPreview()"
+          class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-[14px] font-semibold hover:bg-slate-50 transition-colors">
+          Batal
+        </button>
+        <button id="sendImgBtn" onclick="confirmSendImage()"
+          class="flex-1 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-[14px] font-semibold hover:bg-blue-700 transition-colors shadow-sm flex items-center justify-center gap-2">
+          <i data-lucide="send" class="w-4 h-4"></i> Kirim
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="mt-10 border-t border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <!-- Footer note -->
+      <p class="text-center text-xs text-slate-400">&copy; 2026 · FourtyoneSide | Website Angkatan 41</p>
+    </div>
+  </footer>
+
+  <!-- Supabase config & app JS -->
+  <script src="supabase-config.js"></script>
+  <script src="js/chat.js"></script>
+</body>
+</html>
