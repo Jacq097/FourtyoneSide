@@ -117,30 +117,6 @@
     document.addEventListener('DOMContentLoaded', applyAuthUI);
     window.addEventListener('load', applyAuthUI);
 
-    // ===== Gallery Upload Auth Guard =====
-    async function updateUploadButtonState() {
-      const btn = document.getElementById('adminUploadBtn');
-      if (!btn) return;
-
-      const { data: { session } } = await supabase.auth.getSession();
-      const storedUser = readStoredUser();
-      const isLoggedIn = session || storedUser;
-
-      if (isLoggedIn) {
-        btn.classList.remove('upload-disabled');
-        btn.removeAttribute('disabled');
-        btn.title = 'Upload Foto';
-      } else {
-        btn.classList.add('upload-disabled');
-        btn.setAttribute('disabled', 'true');
-        btn.title = 'Kamu harus login terlebih dahulu untuk mengunggah foto ke galeri!';
-      }
-    }
-
-    // Initial check + re-check on auth change
-    updateUploadButtonState();
-    onAuthStateChange(updateUploadButtonState);
-
     // ===== Sync Header Avatar from Supabase =====
     async function syncHeaderAvatar() {
       var currentUser = readStoredUser();
@@ -207,7 +183,8 @@
       var result = await supabase
         .from('galeri')
         .select('*')
-        .order('tanggal', { ascending: false });
+        .order('tanggal', { ascending: false })
+        .limit(6);
 
       var data = result.data;
       var error = result.error;
@@ -410,12 +387,15 @@
     fetchStudents();
 
     // ===== Search & Filter Logic =====
-    document.getElementById('searchInput').addEventListener('input', () => {
-      const activeBtn = document.querySelector('.filter-btn.active');
-      const selectedKelas = activeBtn ? activeBtn.dataset.filter : 'all';
-      const kelas = selectedKelas === 'all' ? 'Semua' : selectedKelas;
-      filterByKelas(kelas);
-    });
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        const activeBtn = document.querySelector('.filter-btn.active');
+        const selectedKelas = activeBtn ? activeBtn.dataset.filter : 'all';
+        const kelas = selectedKelas === 'all' ? 'Semua' : selectedKelas;
+        filterByKelas(kelas);
+      });
+    }
 
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -423,107 +403,6 @@
         btn.classList.add('active');
         filterByKelas(btn.dataset.filter === 'all' ? 'Semua' : btn.dataset.filter);
       });
-    });
-
-    // ===== Admin Upload Modal =====
-    const adminModal = document.getElementById('adminModal');
-    const adminUploadBtn = document.getElementById('adminUploadBtn');
-    const closeModal = document.getElementById('closeModal');
-    const modalBackdrop = document.getElementById('modalBackdrop');
-    const fotoInput = document.getElementById('fotoInput');
-    const fotoPreview = document.getElementById('fotoPreview');
-
-    function openModal() {
-      adminModal.classList.remove('hidden');
-      adminModal.classList.add('flex');
-    }
-    function closeModalFn() {
-      adminModal.classList.add('hidden');
-      adminModal.classList.remove('flex');
-      fotoPreview.src = '';
-      fotoPreview.classList.add('hidden');
-      fotoInput.value = '';
-    }
-
-    adminUploadBtn.addEventListener('click', openModal);
-    closeModal.addEventListener('click', closeModalFn);
-    modalBackdrop.addEventListener('click', closeModalFn);
-
-    fotoInput.addEventListener('change', () => {
-      const file = fotoInput.files[0];
-      if (!file) return;
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Ukuran gambar maksimal 5MB!');
-        fotoInput.value = '';
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        fotoPreview.src = e.target.result;
-        fotoPreview.classList.remove('hidden');
-      };
-      reader.readAsDataURL(file);
-    });
-
-    // ===== Handle Upload Form =====
-    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const { data: { session } } = await supabase.auth.getSession();
-      var storedUser = (typeof readStoredUser === 'function' ? readStoredUser() : null)
-                       || JSON.parse(safeStorageGet(window.localStorage, 'currentUser') || safeStorageGet(window.localStorage, 'user') || '{}');
-      const isLoggedIn = session || (storedUser && storedUser.id);
-      if (!isLoggedIn) {
-        alert('Kamu harus login terlebih dahulu untuk mengunggah foto ke galeri!');
-        return;
-      }
-      const caption = document.getElementById('photoCaption').value;
-      const date = document.getElementById('photoDate').value;
-      const file = fotoInput.files[0];
-
-      if (!file) {
-        alert('Pilih foto terlebih dahulu!');
-        return;
-      }
-
-      const ext = file.name.split('.').pop();
-      const fileName = `galeri_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
-      
-      const { error: uploadError } = await supabase.storage
-        .from('galeri')
-        .upload(fileName, file, { upsert: true, contentType: file.type });
-
-      if (uploadError) {
-        console.error('Gagal upload foto:', uploadError.message);
-        alert('Gagal upload foto: ' + uploadError.message);
-        return;
-      }
-
-      const { data: publicUrlData } = supabase.storage
-        .from('galeri')
-        .getPublicUrl(fileName);
-
-      const publicUrl = publicUrlData.publicUrl;
-
-      const { error: insertError } = await supabase
-        .from('galeri')
-        .insert({
-          foto_url: publicUrl,
-          caption: caption,
-          tanggal: date,
-          created_by: (currentUser ? currentUser.username : null) || (currentUser ? currentUser.nama_lengkap : null) || 'Siswa'
-        });
-
-      if (insertError) {
-        console.error('Gagal simpan ke galeri:', insertError.message);
-        alert('Gagal simpan ke galeri: ' + insertError.message);
-        return;
-      }
-
-      await fetchGallery();
-      closeModalFn();
-      e.target.reset();
-      alert('Foto berhasil ditambahkan ke galeri!');
     });
 
     // ===== Image Preview Lightbox =====
@@ -552,8 +431,8 @@
       }, 300);
     }
 
-    closePreviewBtn.addEventListener('click', closePreview);
-    previewBackdrop.addEventListener('click', closePreview);
+    if (closePreviewBtn) closePreviewBtn.addEventListener('click', closePreview);
+    if (previewBackdrop) previewBackdrop.addEventListener('click', closePreview);
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && !previewModal.classList.contains('hidden')) {
